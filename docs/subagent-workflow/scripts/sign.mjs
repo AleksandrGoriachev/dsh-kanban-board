@@ -1,0 +1,203 @@
+#!/usr/bin/env node
+/*
+ * Ed25519 для записи о приёмке.
+ *
+ * Подписывается каноническая форма записи без полей подписи: ключи объектов
+ * сортируются лексикографически, отступов нет, UTF-8. Проверка возможна по
+ * публичному ключу, без секрета — в этом смысл асимметричной подписи.
+ */
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+export function canonicalize(value) {
+  if (Array.isArray(value)) return '[' + value.map(canonicalize).join(',') + ']';
+  if (value !== null && typeof value === 'object') {
+    const keys = Object.keys(value).sort();
+    return '{' + keys.map((key) => JSON.stringify(key) + ':' + canonicalize(value[key])).join(',') + '}';
+  }
+  return JSON.stringify(value);
+}
+
+export function publicKeyFingerprint(publicKeyPem) {
+  const key = crypto.createPublicKey(publicKeyPem);
+  const der = key.export({ type: 'spki', format: 'der' });
+  return crypto.createHash('sha256').update(der).digest('hex').slice(0, 16);
+}
+
+export function generateKeyPair() {
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
+  return {
+    privateKeyPem: privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(),
+    publicKeyPem: publicKey.export({ type: 'spki', format: 'pem' }).toString(),
+  };
+}
+
+const SIGNATURE_FIELDS = ['signature', 'signatureAlgorithm', 'keyId', 'publicKeyFingerprint'];
+
+/** Поля, которые покрывает утверждение 0.3: документ утверждает файл, автора и время. */
+export const APPROVAL_COVERS = 'hash+by+at';
+
+/** keyId из плоской (0.2) или вложенной (0.3) формы. */
+export function keyIdOf(record) {
+  if (!record || typeof record !== 'object') return '';
+  if (typeof record.keyId === 'string' && record.keyId !== '') return record.keyId;
+  if (record.signature && typeof record.signature === 'object' && typeof record.signature.keyId === 'string') return record.signature.keyId;
+  return '';
+}
+
+/**
+ * 0130: две формы утверждения.
+ * Плоская (0.2): signature — строка, покрывает весь документ без полей подписи.
+ * Вложенная (0.3): signature.covers = 'hash+by+at', покрывает ровно эти три поля.
+ * Обе проверяются своей формой — иначе подпись «покрывает» не то, что заявляет.
+ */
+export function signingBody(record) {
+  const nested = record && typeof record.signature === 'object' && record.signature !== null;
+  if (nested) {
+    return canonicalize({ hash: record.hash, by: record.by, at: record.at });
+  }
+  const copy = { ...record };
+  for (const field of SIGNATURE_FIELDS) delete copy[field];
+  return canonicalize(copy);
+}
+
+export function signRecord(record, { privateKeyPem, keyId }) {
+  const publicKeyPem = crypto.createPublicKey(privateKeyPem).export({ type: 'spki', format: 'pem' }).toString();
+  const body = signingBody(record);
+  const signature = crypto
+    .sign(null, Buffer.from(body, 'utf8'), crypto.createPrivateKey(privateKeyPem))
+    .toString('base64');
+  return {
+    ...record,
+    signatureAlgorithm: 'ed25519',
+    keyId,
+    publicKeyFingerprint: publicKeyFingerprint(publicKeyPem),
+    signature,
+  };
+}
+
+export function verifyRecord(record, publicKeyPem) {
+  const nested = record && typeof record.signature === 'object' && record.signature !== null;
+  if (nested) {
+    if (record.signature.covers !== APPROVAL_COVERS) return false;
+    if (typeof record.signature.value !== 'string' || record.signature.value.length === 0) return false;
+    if (String(record.signature.algo || 'ed25519').toLowerCase() !== 'ed25519') return false;
+  } else {
+    if (record.signatureAlgorithm !== 'ed25519') return false;
+    if (typeof record.signature !== 'string' || record.signature.length === 0) return false;
+  }
+  try {
+    const body = signingBody(record);
+    const value = nested ? record.signature.value : record.signature;
+    return crypto.verify(
+      null,
+      Buffer.from(body, 'utf8'),
+      crypto.createPublicKey(publicKeyPem),
+      Buffer.from(value, 'base64'),
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function readJsonFile(file) {
+  /* Windows-инструменты любят писать BOM: JSON.parse на нём падает. */
+  return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+}
+
+/**
+ * 0162: выбор ключа эпохи. При ротации у одного keyId несколько записей:
+ * старая (retiredAt + legacy) и новая (activeFrom). Подпись проверяется ключом,
+ * действовавшим на дату подписи, а не «текущим». Если приватная часть утеряна,
+ * историческая запись помечается legacy — это WARN, а не подделка.
+ */
+export function selectAcceptorEntry(acceptors, keyId, at) {
+  const list = (Array.isArray(acceptors) ? acceptors : []).filter((item) => item && item.keyId === keyId);
+  if (list.length === 0) return { entry: null, legacy: false, reason: 'ключ не закреплён' };
+  const time = at ? new Date(at).getTime() : NaN;
+  if (Number.isFinite(time)) {
+    const until = (item) => (item.retiredAt ? new Date(item.retiredAt).getTime() : Number.POSITIVE_INFINITY);
+    const from = (item) => (item.activeFrom ? new Date(item.activeFrom).getTime() : Number.NEGATIVE_INFINITY);
+    const applicable = list.filter((item) => time >= from(item) && time <= until(item));
+    if (applicable.length > 0) {
+      const entry = applicable.sort((a, b) => from(b) - from(a))[0];
+      return { entry, legacy: entry.legacy === true, reason: entry.legacy === true ? 'ключ эпохи утерян' : null };
+    }
+    const legacy = list.find((item) => item.legacy === true);
+    if (legacy) return { entry: legacy, legacy: true, reason: 'ключ эпохи утерян' };
+  }
+  return { entry: list[0], legacy: list[0].legacy === true, reason: list[0].legacy === true ? 'ключ эпохи утерян' : null };
+}
+export function loadAcceptors(file) {
+  const parsed = readJsonFile(file);
+  const list = Array.isArray(parsed) ? parsed : parsed.acceptors;
+  if (!Array.isArray(list)) throw new Error('acceptors.json: ожидается { "acceptors": [...] }');
+  for (const item of list) {
+    if (!item.keyId || !item.publicKeyPem) throw new Error('acceptors.json: у ключа нет keyId или publicKeyPem');
+    if (item.kind !== 'agent' && item.kind !== 'human') throw new Error('acceptors.json: kind должен быть agent или human (' + item.keyId + ')');
+  }
+  return list;
+}
+
+function fail(message) {
+  console.error('sign: ' + message);
+  process.exit(1);
+}
+
+function args(argv) {
+  const out = { _: [] };
+  for (let i = 0; i < argv.length; i += 1) {
+    const a = argv[i];
+    if (a.startsWith('--')) {
+      const next = argv[i + 1];
+      if (next !== undefined && !next.startsWith('--')) { out[a.slice(2)] = next; i += 1; }
+      else out[a.slice(2)] = true;
+    } else out._.push(a);
+  }
+  return out;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const argv = args(process.argv.slice(2));
+  const cmd = argv._[0];
+  if (cmd === 'keygen') {
+    const outDir = path.resolve(argv['out-dir'] || '.keys');
+    const id = String(argv.id || '');
+    if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(id)) fail('--id: строчные латинские, цифры и дефис');
+    const { privateKeyPem, publicKeyPem } = generateKeyPair();
+    fs.mkdirSync(outDir, { recursive: true });
+    const priv = path.join(outDir, id + '.key.pem');
+    const pub = path.join(outDir, id + '.pub.pem');
+    fs.writeFileSync(priv, privateKeyPem, { mode: 0o600 });
+    fs.writeFileSync(pub, publicKeyPem, { mode: 0o644 });
+    console.log(JSON.stringify({ keyId: id, privateKey: priv, publicKey: pub, fingerprint: publicKeyFingerprint(publicKeyPem) }, null, 2));
+    process.exit(0);
+  }
+  if (cmd === 'sign') {
+    if (!argv.file || !argv.key || !argv.id) fail('sign --file <record.json> --key <private.pem> --id <keyId>');
+    const record = readJsonFile(argv.file);
+    const signed = signRecord(record, { privateKeyPem: fs.readFileSync(argv.key, 'utf8'), keyId: String(argv.id) });
+    fs.writeFileSync(argv.file, JSON.stringify(signed, null, 2) + '\n');
+    console.log('sign: подписано ' + argv.file + ' ключом ' + argv.id);
+    process.exit(0);
+  }
+  if (cmd === 'verify') {
+    if (!argv.file || !argv.public) fail('verify --file <record.json> --public <public.pem>');
+    const record = readJsonFile(argv.file);
+    const ok = verifyRecord(record, fs.readFileSync(argv.public, 'utf8'));
+    if (!ok) fail('подпись не совпадает');
+    console.log('sign: подпись верна (' + record.keyId + ')');
+    process.exit(0);
+  }
+  if (cmd === 'fingerprint') {
+    if (!argv.public) fail('fingerprint --public <public.pem>');
+    console.log(publicKeyFingerprint(fs.readFileSync(argv.public, 'utf8')));
+    process.exit(0);
+  }
+  console.log('Usage: sign.mjs keygen --id <keyId> [--out-dir .keys]');
+  console.log('       sign.mjs sign --file <record.json> --key <private.pem> --id <keyId>');
+  console.log('       sign.mjs verify --file <record.json> --public <public.pem>');
+  console.log('       sign.mjs fingerprint --public <public.pem>');
+}

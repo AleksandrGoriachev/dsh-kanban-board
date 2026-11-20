@@ -1,0 +1,592 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import {
+  parseArgv, readTask, verifyLock, exists, git, repoRoot, extractCriteriaBlock,
+  scanSecrets, isManual, decisionEvidenceKind, DECISION_CLASSES, DECISION_IMPACTS,
+  DECISION_EVIDENCE_KINDS, loadConfig, readJson, evaluateEffects, hasAcceptedRecord,
+  patternsIntersect, reportFatal, metaAttributionGap,
+} from './lib/common.mjs';
+import { policyOf, applyLevel } from './lib/policy.mjs';
+import { evaluateAttack } from './lib/attack.mjs';
+
+const NL = String.fromCharCode(10);
+const argv = parseArgv(process.argv.slice(2));
+if (argv.help) {
+  console.log('Usage: node task-lint.mjs --task <dir> [--repo <dir>] [--strict] [--json]');
+  process.exit(0);
+}
+
+const taskDir = path.resolve(argv.task || argv._[0] || '.');
+const repo = path.resolve(argv.repo || repoRoot(taskDir));
+const strict = Boolean(argv.strict);
+const errors = [];
+const warnings = [];
+const error = (m) => errors.push(m);
+const warn = (m) => warnings.push(m);
+
+function headingTitle(line) {
+  let s = line.slice(3).trim();
+  const m = s.match(/^[0-9]+\./);
+  if (m) s = s.slice(m[0].length).trim();
+  return s;
+}
+
+/*
+ * 2.6.6 (D1): путь, названный в разделе «Что сделать», — требование к работе, а
+ * не фон. Если путь в бэктиках не покрыт allowedPaths, задание невыполнимо:
+ * исполнитель либо нарушит границу, либо не сделает названное. Проверяются
+ * только repo-пути: токен с `/`, не абсолютный, без шаблонных и служебных
+ * символов; команды (с пробелом внутри бэктиков) и URL сюда не попадают.
+ */
+const PROHIBITION = /(?:не\s+трога|не\s+меня|запрещ|не\s+коммит)/i;
+function isRepoPathToken(token) {
+  if (!token.includes('/')) return false;
+  if (token.startsWith('/')) return false;
+  if (/^[A-Za-z]:[\\/]/.test(token)) return false;
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:\/\//.test(token)) return false;
+  if (/[%~*<>\s\\]/.test(token)) return false;
+  if (token.split('/').includes('..')) return false;
+  return true;
+}
+function stepSectionPaths(taskMd) {
+  const lines = taskMd.split(NL);
+  const start = lines.findIndex((line) => line.startsWith('## ') && headingTitle(line) === 'Что сделать');
+  if (start === -1) return [];
+  const out = [];
+  for (let i = start + 1; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (line.startsWith('## ')) break;
+    const re = /`([^`\n]+)`/g;
+    let match;
+    while ((match = re.exec(line)) !== null) {
+      const token = match[1].trim();
+      if (PROHIBITION.test(line.slice(0, match.index))) continue;
+      if (!isRepoPathToken(token)) continue;
+      if (!out.includes(token)) out.push(token);
+    }
+  }
+  return out;
+}
+
+try {
+  const { files, taskMd, meta, criteria } = readTask(taskDir);
+
+/*
+ * 2.6.82: закрытие без приёмки — отдельный факт (closure.json). Задание с ним
+ * не должно нести acceptance.json (одно поле не может значить и «принято», и
+ * «брошено»); причина закрытия обязательна.
+ */
+if (exists(path.join(taskDir, 'closure.json'))) {
+  let closure = null;
+  try { closure = readJson(path.join(taskDir, 'closure.json')); } catch { closure = null; }
+  if (!closure || typeof closure !== 'object' || Array.isArray(closure)) {
+    error('closure.json: не читается или не объект');
+  } else if (!['closed', 'superseded'].includes(String(closure.status))) {
+    error('closure.json: status должен быть closed или superseded');
+  } else if (typeof closure.reason !== 'string' || closure.reason.trim() === '') {
+    error('closure.json: нет reason');
+  } else if (exists(path.join(taskDir, 'acceptance.json'))) {
+    error('closure.json и acceptance.json одновременно: закрытие без приёмки несовместимо с приёмкой');
+  } else {
+    warn('задание закрыто без приёмки (' + closure.status + '): ' + closure.reason);
+  }
+}
+  const config = loadConfig(repo);
+  const policy = policyOf(config);
+
+  const requiredMeta = ['id', 'version', 'risk', 'created', 'owner', 'executor', 'acceptor', 'base', 'criteria', 'allowedPaths'];
+  for (const key of requiredMeta) {
+    if (meta[key] === undefined || meta[key] === null || meta[key] === '') error('TASK-META: нет поля ' + key);
+  }
+  const id = String(meta.id ?? '');
+  if (!/^[0-9A-Za-z._-]+$/.test(id)) error('TASK-META.id: допустимы буквы, цифры, точка, _, -');
+  const baseName = path.basename(taskDir);
+  if (/^[0-9]{4,}$/.test(baseName) && id !== baseName) error('TASK-META.id (' + id + ') не совпадает с именем каталога (' + baseName + ')');
+  if (!['low', 'medium', 'high'].includes(meta.risk)) error('TASK-META.risk: ожидается low | medium | high');
+  if (!Number.isInteger(meta.version) || meta.version < 1) error('TASK-META.version: целое >= 1');
+  if (meta.executor && meta.acceptor && meta.executor === meta.acceptor) error('executor и acceptor должны быть разными ролями');
+  if (meta.created && !/^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(String(meta.created))) warn('TASK-META.created: ожидается дата YYYY-MM-DD');
+  if (meta.risk === 'high' && meta.securityReview !== true) error('risk=high без securityReview: true');
+  if (meta.risk === 'high' && meta.humanSignoff !== true) error('risk=high без humanSignoff: true');
+  /*
+   * 0068 (WC-43): приёмщик-субагент без узла — видимое предупреждение. Политика
+   * структуры остаётся warn, поэтому exit не меняется: контракт можно запереть,
+   * но отсутствие узла видно до красного прогона и на панели.
+   */
+  const metaGap = metaAttributionGap(meta);
+  if (metaGap) warn('attribution: ' + metaGap.message);
+
+  /*
+   * Кто выдал задание — часть контракта, а не отчёт исполнителя (1.4, D1). Сессия постановщика
+   * фиксируется до работы и позже не даёт приёмщику совпасть с ним. Для low поле не требуется:
+   * там цена ошибки ниже, а запись всё равно помечается как declared.
+   */
+  if (meta.risk !== 'low') {
+    const issuedBy = meta.issuedBy;
+    if (issuedBy === undefined || issuedBy === null || typeof issuedBy !== 'object' || Array.isArray(issuedBy)) {
+      error('TASK-META.issuedBy: для medium/high нужен объект { kind, session, model }');
+    } else {
+      if (issuedBy.kind !== 'agent') error('TASK-META.issuedBy.kind: ожидается agent');
+      if (typeof issuedBy.session !== 'string' || issuedBy.session.trim() === '') error('TASK-META.issuedBy.session: нужна непустая сессия постановщика');
+      if (typeof issuedBy.model !== 'string' || issuedBy.model.trim() === '') error('TASK-META.issuedBy.model: нужна модель постановщика');
+    }
+  }
+
+  const allowed = Array.isArray(meta.allowedPaths) ? meta.allowedPaths : [];
+  if (allowed.length === 0) error('TASK-META.allowedPaths: нужен хотя бы один путь');
+  for (const p of allowed) {
+    if (typeof p !== 'string' || !p.trim()) { error('allowedPaths: пустой или нестроковый элемент'); continue; }
+    if (path.isAbsolute(p)) error('allowedPaths: абсолютный путь запрещён: ' + p);
+    if (p.split('/').includes('..')) error('allowedPaths: ".." запрещён: ' + p);
+    if (p === '**' || p === '**/*') warn('allowedPaths: слишком широкий шаблон: ' + p);
+  }
+  /*
+   * 0096 (WC-36): путь чужого задания в allowedPaths. Так бывает, когда каталог
+   * 0055 скопировали в 0056 и заменили номер не везде: исполнитель получал право
+   * править контракт предыдущего задания. Своё задание — можно, чужое — ошибка.
+   */
+  const foreignTaskPaths = [];
+  for (const p of allowed) {
+    const match = String(p).match(/^docs\/tasks\/(\d{4})\//u);
+    if (match && match[1] !== String(meta.id)) foreignTaskPaths.push(String(p));
+  }
+  if (foreignTaskPaths.length > 0) {
+    error('allowedPaths ссылается на чужое задание: ' + foreignTaskPaths.join(', ')
+      + ' — при переиспользовании каталога остаются пути прежнего номера');
+  }
+  for (const p of (Array.isArray(meta.redAllowDirty) ? meta.redAllowDirty : [])) {
+    const match = String(p).match(/^docs\/tasks\/(\d{4})\//u);
+    if (match && match[1] !== String(meta.id)) {
+      warn('redAllowDirty ссылается на чужое задание: ' + String(p) + ' — красный сможет править чужие артефакты');
+    }
+  }
+
+  const protectedPaths = Array.isArray(meta.protectedPaths) ? meta.protectedPaths : [];
+  if (protectedPaths.length === 0 && meta.risk !== 'low') warn('protectedPaths пуст: тесты/проверки не защищены хешем');
+  for (const p of protectedPaths) {
+    if (typeof p !== 'string' || !p.trim()) error('protectedPaths: пустой или нестроковый элемент');
+    else if (path.isAbsolute(p) || p.split('/').includes('..')) error('protectedPaths: недопустимый путь: ' + p);
+  }
+  /*
+   * 2.4.6: движок не защищаем. Если protectedPaths накрывает сам пакет
+   * (docs/subagent-workflow/), то обновление пакета через init --force меняет эти
+   * файлы, замок задания краснеет, а перезамок после красного запрещён (I-3):
+   * задание навсегда остаётся в ошибке. Ровно это случилось с заданием 0001 в
+   * default-workspace при переходе 2.4.3 → 2.4.5 — панель и task-lint показали
+   * «защищённый файл изменён» на пяти файлах пакета.
+   */
+  /*
+   * Каталог движка — конвенция пакета, а не путь к себе: и loadConfig, и
+   * keysFile зашивают docs/subagent-workflow. Пробовать путь к скрипту нельзя —
+   * e2e гоняет ворота из пакета (spec/), и там защита пакета не находилась,
+   * то есть проверка молчала в тестах; на Windows к этому добавляется короткая
+   * форма os.tmpdir() (GORYAC~1) против длинного import.meta.url. Сломанная
+   * проверка хуже отсутствующей: CI на windows-latest покраснел именно из-за неё.
+   */
+  const engineDir = 'docs/subagent-workflow/';
+  {
+    const engineRoot = engineDir.replace(/\/+$/, '');
+    const covering = protectedPaths.find((p) => {
+      if (typeof p !== 'string') return false;
+      const norm = p.split(path.sep).join('/').replace(/\/+$/, '');
+      return norm === engineRoot || norm.startsWith(engineDir);
+    });
+    if (covering) {
+      warn('protectedPaths включает сам пакет: ' + covering + ' — обновление пакета (init --force) изменит эти файлы, замок станет красным, а перезамок после красного запрещён (I-3). Защищайте свои проверки (checks/**, tests/**) и артефакты задания: движок защищён версией пакета (поле tool в criteria.lock).');
+    }
+  }
+  /*
+   * F-7 (2.6.4): путь из allowedPaths, защищённый protectedPaths, делает задание
+   * невыполнимым — правка защищённого файла краснит criteria.lock, а перезамок
+   * после красного запрещён (I-3). Именно так аннулировали 0012 (весь
+   * spec/checks/** в защищённых) и почти 0014/0017: ошибка была видна только на
+   * task-verify, уже после работы исполнителя. Уровень печати — тот же, что у
+   * расхождений замка (2.6.2): открытое задание — ERROR, принятое — WARN, иначе
+   * проверка пакета «принятое lint не валит» (spec/checks/deployed-copy.mjs)
+   * краснеет на исторических контрактах, которые уже не переписать.
+   *
+   * Исключение — собственные контрактные артефакты задания. task.md и
+   * criteria.json уже защищены замком (taskFileSha256/criteriaJsonSha256), а
+   * хеширование protectedPaths каталог задания исключает: дубль в
+   * protectedPaths ничего не добавляет. При этом docs/tasks/<id>/** обязан быть
+   * в allowedPaths — по нему идут untracked-артефакты (criteria.lock, red.json,
+   * red/verify.log). Без исключения правило валило бы каждый собственный
+   * контракт; впервые это видно на 0019. Игнорируются только точные пути
+   * <задание>/task.md и <задание>/criteria.json: шаблон, накрывающий их вместе
+   * с чем-то ещё, остаётся пересечением.
+   */
+  const taskRel = path.relative(repo, taskDir).split(path.sep).join('/');
+  const contractArtifacts = new Set([taskRel + '/task.md', taskRel + '/criteria.json']);
+  const normalizePattern = (value) => {
+    const posix = String(value).split(path.sep).join('/');
+    return posix.startsWith('./') ? posix.slice(2) : posix;
+  };
+  const boundaryConflicts = [];
+  for (const allowedPath of allowed) {
+    if (typeof allowedPath !== 'string' || allowedPath.trim() === '') continue;
+    for (const protectedPath of protectedPaths) {
+      if (typeof protectedPath !== 'string' || protectedPath.trim() === '') continue;
+      if (contractArtifacts.has(normalizePattern(protectedPath))) continue;
+      if (patternsIntersect(allowedPath, protectedPath)) boundaryConflicts.push([allowedPath, protectedPath]);
+    }
+  }
+
+  const redAllow = Array.isArray(meta.redAllowDirty) ? meta.redAllowDirty : [];
+  for (const p of redAllow) {
+    if (typeof p !== 'string' || path.isAbsolute(p) || p.split('/').includes('..')) error('redAllowDirty: недопустимый путь: ' + p);
+  }
+
+  const headings = ['Цель', 'Что не входит', 'Инварианты', 'Границы знания', 'Среда', 'Критерии приёмки', 'Отчёт', 'Коммит'];
+  const actualHeadings = taskMd.split(NL).filter((l) => l.startsWith('## ')).map(headingTitle);
+  for (const h of headings) {
+    if (!actualHeadings.includes(h)) error('task.md: нет раздела "## ' + h + '"');
+  }
+
+  const block = extractCriteriaBlock(taskMd);
+  const tableIds = [];
+  const blockLines = block.replaceAll(String.fromCharCode(13), '').split(NL);
+  for (const line of blockLines) {
+    if (!line.trim().startsWith('|')) continue;
+    if (/^[|: -]+$/.test(line.trim())) continue;
+    const cells = line.split('|').slice(1, -1).map((c) => c.trim());
+    if (cells.length === 0) continue;
+    const first = cells[0].replace(/[*_]/g, '').trim();
+    if (!first || first.toLowerCase() === 'id' || first === '№' || first === '#') continue;
+    tableIds.push(first);
+  }
+  if (tableIds.length === 0) error('Критерии: таблица пуста или не распознана');
+  if (criteria.parsed.task && String(criteria.parsed.task) !== id) error('criteria.json.task (' + criteria.parsed.task + ') не совпадает с TASK-META.id (' + id + ')');
+  const jsonIds = criteria.criteria.map((c) => String(c.id));
+  const dupJson = jsonIds.filter((x, i) => jsonIds.indexOf(x) !== i);
+  if (dupJson.length) error('criteria.json: повторяются ID: ' + [...new Set(dupJson)].join(', '));
+  const onlyTable = tableIds.filter((x) => !jsonIds.includes(x));
+  const onlyJson = jsonIds.filter((x) => !tableIds.includes(x));
+  if (onlyTable.length) error('Критерии есть в таблице, но нет в criteria.json: ' + onlyTable.join(', '));
+  if (onlyJson.length) error('Критерии есть в criteria.json, но нет в таблице: ' + onlyJson.join(', '));
+
+  for (const c of criteria.criteria) {
+    const cid = String(c.id ?? '?');
+    if (!c.id) error('criterion без id');
+    if (!c.title || typeof c.title !== 'string') error('criterion ' + cid + ': нет title');
+    if (!c.command || typeof c.command !== 'string') error('criterion ' + cid + ': нет command');
+    const expect = c.expect;
+    if (!expect || typeof expect !== 'object' || Object.keys(expect).length === 0) {
+      error('criterion ' + cid + ': пустой expect (укажите exitCode/stdoutContains/stdoutRegex/json)');
+    } else {
+      const allowedKeys = ['exitCode', 'stdoutContains', 'stderrContains', 'stdoutRegex', 'stderrRegex', 'json'];
+      for (const k of Object.keys(expect)) if (!allowedKeys.includes(k)) warn('criterion ' + cid + ': неизвестный ключ expect.' + k);
+      if ('exitCode' in expect && !Number.isInteger(expect.exitCode)) error('criterion ' + cid + ': expect.exitCode должен быть целым');
+    }
+    if (c.timeoutMs !== undefined && (!Number.isInteger(c.timeoutMs) || c.timeoutMs <= 0)) error('criterion ' + cid + ': timeoutMs должен быть целым > 0');
+    if (c.tags !== undefined && !Array.isArray(c.tags)) error('criterion ' + cid + ': tags должен быть массивом');
+    if (typeof c.command === 'string' && /(?:^| )(?:rm -rf|git push|git commit|npm publish|DROP TABLE)/i.test(c.command)) {
+      warn('criterion ' + cid + ': потенциально необратимая команда: ' + c.command.slice(0, 120));
+    }
+    /*
+     * covers (2.1.0): критерий объявляет, какие файлы он покрывает. Без этого
+     * приёмка проверяет только объявленные команды и не видит изменённый код,
+     * на который критерия нет.
+     */
+    if (c.covers !== undefined) {
+      if (!Array.isArray(c.covers) || c.covers.length === 0) {
+        error('criterion ' + cid + ': covers должен быть непустым массивом шаблонов путей');
+      } else {
+        for (const pattern of c.covers) {
+          if (typeof pattern !== 'string' || pattern.trim() === '') error('criterion ' + cid + ': covers содержит пустой шаблон');
+          else if (path.isAbsolute(pattern) || pattern.split('/').includes('..')) error('criterion ' + cid + ': covers: недопустимый путь: ' + pattern);
+        }
+      }
+    }
+  }
+  /*
+   * 2.6.2: по ПРИНЯТОМУ заданию диагностика не валит прогон. Обновление пакета
+   * штатно меняет защищённые файлы (замок краснеет), а правила решений и
+   * эффекта могли появиться позже приёмки — на исторической задаче это десятки
+   * ERROR, хотя задание уже закрыто и перезамок после красного запрещён (I-3).
+   * Основание — валидная запись приёмки, тот же предикат, что в verifyLock:
+   * пустой, битый файл, чужой статус или чужая запись (2.6.7: record.task
+   * обязан совпасть с id задания) строгости не снимают. Для открытого задания
+   * всё остаётся ERROR: lint не ворота исполнения, но и не разрешение.
+   */
+  const acceptedRecord = hasAcceptedRecord(files.acceptance, meta.id);
+  const quality = (message) => (acceptedRecord ? warn : error)(message);
+
+  const coversDeclared = criteria.criteria.some((c) => Array.isArray(c.covers) && c.covers.length > 0);
+  if (meta.risk !== 'low' && !coversDeclared) {
+    const appliedCovers = applyLevel(policy.coverage, ['criteria.json: для risk=' + meta.risk + ' нужен хотя бы один критерий с covers: без него изменённый код может остаться без проверки']);
+    errors.push(...appliedCovers.errors);
+    warnings.push(...appliedCovers.warnings);
+  }
+  /*
+   * 2.6.4: путь allowedPaths, не покрытый ни одним covers, — самый частый дефект
+   * контракта (0014, 0017): файл разрешён к правке, но ни один критерий его не
+   * покрывает, и проверять изменение нечем. 2.6.6 (D1, дефект 0027): строгость
+   * делится по виду пути. Конкретный файл — ERROR: именно так 0014 и 0017 дошли
+   * до verify. Шаблон (`*`, `?`, `[`) — WARN даже у открытого задания: это
+   * декларация «могу менять», а не факт правки, и перечислить будущие файлы
+   * каталога в контракте невозможно. Шаблоны каталога (`**`, `src/**`) не
+   * печатаются вовсе (2.6.4, п.5). Свои артефакты задания (`docs/tasks/<id>/**`)
+   * и markdown не считаются: у них нет поведения (computeCoverage их исключает).
+   * У принятого задания оба уровня — WARN (2.6.2).
+   */
+  const coverPatterns = [];
+  for (const criterion of criteria.criteria) {
+    for (const pattern of (Array.isArray(criterion.covers) ? criterion.covers : [])) {
+      if (typeof pattern === 'string' && pattern.trim() !== '') coverPatterns.push(pattern);
+    }
+  }
+  for (const allowedPath of allowed) {
+    if (typeof allowedPath !== 'string' || allowedPath.trim() === '') continue;
+    if (allowedPath === '**' || allowedPath === '**/*' || /\/\*\*$/.test(allowedPath)) continue;
+    if (coverPatterns.some((pattern) => patternsIntersect(allowedPath, pattern))) continue;
+    const concreteFile = !/[*?[]/.test(allowedPath)
+      && !/\.md$/i.test(allowedPath)
+      && !(taskRel !== '' && (allowedPath === taskRel || allowedPath.startsWith(taskRel + '/')));
+    const coversHint = allowedPath + ' — добавьте его в covers, иначе изменение проверяется только глазами';
+    /*
+     * Дефект 0027: обе ветви шли через quality(), и шаблон у открытого задания
+     * давал ERROR с exit 1. Конкретный файл — quality (ERROR, у принятого WARN),
+     * шаблон — всегда warn (2.6.6, D1).
+     */
+    if (concreteFile) quality('covers: файл из allowedPaths не покрыт ни одним критерием: ' + coversHint);
+    else warn('covers: шаблон из allowedPaths не покрыт ни одним критерием: ' + coversHint);
+  }
+  /*
+   * 2.6.6 (D1): путь из «Что сделать» обязан быть разрешён. Строки с запретом
+   * («не трогай», «не меняй», «запрещено», «не коммить») — граница, а не
+   * требование: путь после запрета не проверяется. Без раздела правило молчит,
+   * поэтому исторические задания и фикстуры не краснеют.
+   */
+  for (const stepPath of stepSectionPaths(taskMd)) {
+    if (allowed.some((pattern) => typeof pattern === 'string' && patternsIntersect(pattern, stepPath))) continue;
+    quality('путь из «Что сделать» не разрешён: ' + stepPath + ' — добавьте его в allowedPaths или уберите из раздела «Что сделать»');
+  }
+  for (const key of ['setup', 'teardown']) {
+    if (criteria.parsed[key] !== undefined && !Array.isArray(criteria.parsed[key])) error('criteria.json: ' + key + ' должен быть массивом');
+  }
+
+  const redExpect = criteria.redExpect;
+  if (redExpect !== undefined) {
+    if (typeof redExpect !== 'object' || redExpect === null || Array.isArray(redExpect)) {
+      error('criteria.json: redExpect должен быть объектом');
+    } else {
+      const mustFail = Array.isArray(redExpect.mustFail) ? redExpect.mustFail.map(String) : null;
+      const mustPass = Array.isArray(redExpect.mustPass) ? redExpect.mustPass.map(String) : [];
+      if (mustFail === null) error('criteria.json: redExpect.mustFail должен быть массивом ID');
+      /*
+       * F-5 (2.6.4): пустой mustFail у low больше не «тихое исключение». Красный
+       * обязателен и для low; отсутствие красного — заявление, а не молчание,
+       * поэтому разрешено только явным redExpect.noRed.reason. Иначе задание
+       * проходит ворота, не доказав ничего: ровно так ослабляли low раньше.
+       */
+      if (mustFail !== null && mustFail.length === 0) {
+        const noRed = redExpect.noRed;
+        const noRedReason = noRed && typeof noRed === 'object' && !Array.isArray(noRed) ? noRed.reason : undefined;
+        if (meta.risk !== 'low') {
+          error('criteria.json: redExpect.mustFail пуст');
+        } else if (typeof noRedReason !== 'string' || noRedReason.trim() === '') {
+          error('criteria.json: redExpect.mustFail пуст для risk=low без redExpect.noRed.reason'
+            + ' — объявите { "noRed": { "reason": "почему красного нет" } } или перечислите критерии, которые обязаны упасть');
+        }
+      }
+      for (const id of [...(mustFail || []), ...mustPass]) {
+        if (!jsonIds.includes(id)) error('criteria.json: redExpect ссылается на неизвестный критерий ' + id);
+        const criterion = criteria.criteria.find((c) => String(c.id) === id);
+        if (criterion && isManual(criterion)) error('criteria.json: redExpect не должен ссылаться на manual-критерий ' + id);
+      }
+      for (const id of (mustFail || [])) if (mustPass.includes(id)) error('criteria.json: критерий ' + id + ' одновременно mustFail и mustPass');
+      const declared = new Set([...(mustFail || []), ...mustPass]);
+      for (const c of criteria.criteria) if (!isManual(c) && !declared.has(String(c.id))) error('criteria.json: критерий ' + c.id + ' не указан в redExpect');
+      if (redExpect.reasons !== undefined) {
+        if (typeof redExpect.reasons !== 'object' || redExpect.reasons === null || Array.isArray(redExpect.reasons)) {
+          error('criteria.json: redExpect.reasons должен быть объектом');
+        } else {
+          for (const [id, reason] of Object.entries(redExpect.reasons)) {
+            if (!(mustFail || []).includes(id)) error('criteria.json: redExpect.reasons для ' + id + ', а он не в mustFail');
+            if (typeof reason !== 'string' || reason.trim() === '') error('criteria.json: redExpect.reasons[' + id + '] пуст');
+          }
+        }
+      }
+      if (redExpect.noRed !== undefined) {
+        const noRed = redExpect.noRed;
+        if (!noRed || typeof noRed !== 'object' || Array.isArray(noRed)) {
+          error('criteria.json: redExpect.noRed должен быть объектом { reason: "почему красного нет" }');
+        } else if (typeof noRed.reason !== 'string' || noRed.reason.trim() === '') {
+          error('criteria.json: redExpect.noRed.reason пуст — причина отсутствия красного обязательна (2.6.4, F-5)');
+        }
+      }
+      /*
+       * 0057 (WC-35): reasonWindow — осознанное расширение вердиктной зоны, а не
+       * «почти число». Строка "100", true, дробь, ноль и отрицательное значение
+       * молча подменились бы окном по умолчанию, и доказательство ослабло бы
+       * незаметно, поэтому это ERROR контракта, а не WARN.
+       */
+      if (redExpect.reasonWindow !== undefined) {
+        const window = redExpect.reasonWindow;
+        if (!Number.isInteger(window) || window < 1 || window > 10000) {
+          error('criteria.json: redExpect.reasonWindow должен быть целым числом 1..10000 (непустых строк вердиктной зоны), получено ' + JSON.stringify(window));
+        }
+      }
+      if (meta.risk !== 'low') {
+        for (const id of (mustFail || [])) {
+          const reason = (redExpect.reasons || {})[id];
+          if (typeof reason !== 'string' || reason.trim() === '') {
+            error('criteria.json: для risk=' + meta.risk + ' нужна причина падения redExpect.reasons[' + id + '] — подстрока stdout+stderr критерия в вердиктной зоне (последние reasonWindow непустых строк)');
+          }
+        }
+      }
+    }
+  } else if (meta.risk !== 'low') {
+    error('criteria.json: для risk=' + meta.risk + ' нужен redExpect (mustFail/mustPass)');
+  }
+  if (meta.risk !== 'low' && !criteria.criteria.some((c) => Array.isArray(c.tags) && c.tags.includes('negative'))) {
+    error('criteria.json: для risk=' + meta.risk + ' нужен хотя бы один критерий с tags: ["negative"]');
+  }
+
+  /*
+   * Решения (2.1.0): реестр того, что выбрано сверх механической работы. Смысл —
+   * сделать предположение видимым: у семантического решения либо есть исполняемый
+   * критерий, либо подтверждение человека; иначе выпуск закрыт (assumed).
+   */
+  const decisionIssues = [];
+  const decisionNote = (message) => decisionIssues.push(message);
+  const decisions = meta.decisions;
+  if (meta.risk !== 'low' && decisions === undefined) {
+    decisionNote('TASK-META.decisions: для risk=' + meta.risk + ' нужен массив решений (пустой — если решений сверх механических нет)');
+  }
+  if (decisions !== undefined && !Array.isArray(decisions)) {
+    decisionNote('TASK-META.decisions должен быть массивом');
+  }
+  if (Array.isArray(decisions)) {
+    const seen = new Set();
+    for (const [index, decision] of decisions.entries()) {
+      const label = 'решение ' + ((decision && decision.id) ? decision.id : '#' + (index + 1));
+      if (!decision || typeof decision !== 'object' || Array.isArray(decision)) { decisionNote(label + ': должен быть объектом'); continue; }
+      if (typeof decision.id !== 'string' || decision.id.trim() === '') decisionNote(label + ': нет id');
+      else if (seen.has(decision.id)) decisionNote(label + ': повторяется id');
+      else seen.add(decision.id);
+      if (typeof decision.question !== 'string' || decision.question.trim() === '') decisionNote(label + ': нет question');
+      if (typeof decision.chosen !== 'string' || decision.chosen.trim() === '') decisionNote(label + ': нет chosen');
+      if (!DECISION_CLASSES.includes(decision.class)) {
+        decisionNote(label + ': class должен быть ' + DECISION_CLASSES.join(' | '));
+        continue;
+      }
+      if (decision.class === 'mechanical') continue;
+      if (!Array.isArray(decision.options) || decision.options.length < 2) decisionNote(label + ': options — минимум два варианта');
+      if (!DECISION_IMPACTS.includes(decision.impact)) decisionNote(label + ': impact должен быть ' + DECISION_IMPACTS.join(' | '));
+      if (typeof decision.reversible !== 'boolean') decisionNote(label + ': reversible должен быть boolean');
+      if (decision.status !== undefined && !['confirmed', 'assumed'].includes(decision.status)) decisionNote(label + ': status должен быть confirmed | assumed');
+      if (decision.evidence !== undefined) {
+        const evidence = decision.evidence;
+        if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) decisionNote(label + ': evidence должен быть объектом');
+        else {
+          if (!DECISION_EVIDENCE_KINDS.includes(evidence.kind)) decisionNote(label + ': evidence.kind должен быть ' + DECISION_EVIDENCE_KINDS.join(' | '));
+          if (evidence.kind === 'criterion') {
+            if (typeof evidence.ref !== 'string' || !jsonIds.includes(evidence.ref)) decisionNote(label + ': evidence.ref должен называть критерий задания (' + (evidence.ref || '—') + ')');
+          } else if (typeof evidence.ref !== 'string' || evidence.ref.trim() === '') {
+            decisionNote(label + ': evidence.ref обязателен (раздел спецификации, ссылка на ответ заказчика)');
+          }
+        }
+      }
+      if (decision.confirmation !== undefined) {
+        const confirmation = decision.confirmation;
+        if (!confirmation || typeof confirmation !== 'object' || Array.isArray(confirmation)) decisionNote(label + ': confirmation должен быть объектом');
+        else {
+          if (!['customer', 'human'].includes(confirmation.kind)) decisionNote(label + ': confirmation.kind должен быть customer | human');
+          if (typeof confirmation.who !== 'string' || confirmation.who.trim() === '') decisionNote(label + ': confirmation.who обязателен');
+          if (typeof confirmation.at !== 'string' || confirmation.at.trim() === '') decisionNote(label + ': confirmation.at обязателен');
+        }
+      }
+      const evidenceKind = decisionEvidenceKind(decision, criteria.criteria);
+      const touchesUser = decision.impact === 'user-visible' || decision.impact === 'public-contract';
+      if (evidenceKind === 'none' && touchesUser) {
+        decisionNote(label + ': impact=' + decision.impact + ' требует исполняемого критерия (evidence.kind=criterion) или подтверждения человека (confirmation)');
+      }
+      if (evidenceKind === 'none' && decision.status === 'confirmed') {
+        decisionNote(label + ': status=confirmed без доказательства — так нельзя');
+      }
+      if (evidenceKind !== 'none' && decision.status === 'assumed') {
+        warn(label + ': status=assumed, хотя доказательство есть — уберите assumed');
+      }
+      if (evidenceKind === 'none' && !touchesUser) {
+        warn(label + ': решение assumed — приёмка возможна, но releaseReady будет false до подтверждения');
+      }
+    }
+  }
+  for (const [allowedPath, protectedPath] of boundaryConflicts) {
+    quality('allowedPaths: путь ' + allowedPath + ' пересекается с protectedPaths: ' + protectedPath
+      + ' — правка защищённого файла краснит criteria.lock, а перезамок после красного запрещён (I-3); уберите путь из одного из списков');
+  }
+
+  const decisionsApplied = applyLevel(policy.decisions, decisionIssues);
+  for (const message of decisionsApplied.errors) quality(message);
+  warnings.push(...decisionsApplied.warnings);
+
+  /*
+   * Эффект (I-31, 2.3.0): у решения с влиянием на пользователя обязан быть
+   * критерий, который описывает наблюдаемое состояние или порог. Строгость —
+   * та же policy.decisions: речь о доказанности решения.
+   */
+  const effects = evaluateEffects(meta, criteria);
+  const effectsApplied = applyLevel(policy.decisions, effects.issues);
+  for (const message of effectsApplied.errors) quality(message);
+  warnings.push(...effectsApplied.warnings);
+
+  const secrets = scanSecrets(taskMd + NL + criteria.raw);
+  for (const s of secrets) error('Похоже на секрет (' + s.name + ') в строке ' + s.line + ': ' + s.excerpt);
+
+  if (taskMd.includes('см. переписк') || taskMd.includes('как обсуждали') || taskMd.toLowerCase().includes('as discussed')) {
+    warn('task.md ссылается на переписку — исполнитель её не видит');
+  }
+
+  if (exists(files.lock)) {
+    /*
+     * 2.4.9: послабление по contractCommit — только здесь. Lint не является
+     * воротами исполнения: он описывает состояние уже принятого задания, тогда как
+     * task-verify и task-accept обязаны оставаться строгими. Основание —
+     * валидная запись приёмки (status: 'accepted'), а не наличие файла.
+     * 2.6.2: у принятого задания тем же основанием снимаются и остальные
+     * расхождения замка — «защищённый файл изменён» после обновления пакета.
+     */
+    const check = verifyLock(repo, taskDir, meta, taskMd, criteria, { acceptedTolerant: true });
+    for (const e of check.errors) quality('criteria.lock: ' + e);
+    for (const n of check.notes || []) warn('criteria.lock: ' + n);
+  } else if (strict) error('criteria.lock отсутствует (--strict): выполните task-hash --write');
+  else warn('criteria.lock отсутствует: выполните task-hash --write до красного прогона');
+
+  /*
+   * Атака спецификации (2.2.0): если файл есть — проверяем; если policy.attack=fail
+   * и файла нет, для medium/high это ошибка. Уровень строгости — в конфиге.
+   */
+  const attackFile = path.join(taskDir, 'attack.json');
+  if (exists(attackFile)) {
+    const attackCheck = evaluateAttack(readJson(attackFile), { meta, config });
+    const appliedAttack = applyLevel(policy.attack, attackCheck.issues);
+    const appliedFamily = applyLevel(policy.roles.modelFamily, attackCheck.familyIssues);
+    for (const e of [...appliedAttack.errors, ...appliedFamily.errors]) error('attack.json: ' + e);
+    for (const w of [...appliedAttack.warnings, ...appliedFamily.warnings]) warn('attack.json: ' + w);
+  } else if (policy.attack === 'fail' && meta.risk !== 'low') {
+    error('attack.json: атака спецификации не проводилась (policy.attack=fail)');
+  }
+
+  if (meta.base) {
+    const ref = git(repo, ['rev-parse', '--verify', String(meta.base) + '^{commit}']);
+    if (ref.exitCode !== 0) warn('TASK-META.base не разрешается в коммит: ' + meta.base);
+  }
+
+  if (argv.json) {
+    console.log(JSON.stringify({ ok: errors.length === 0, task: id, errors, warnings }, null, 2));
+  } else {
+    console.log('task-lint: ' + (id || '(без id)') + ' — ' + (errors.length ? 'ОШИБКИ' : 'ок'));
+    /* 0060 (WC-41): причина отказа — одной строкой в stdout, с префиксом ворот. */
+    if (errors.length) console.log('task-lint: ' + errors[0]);
+    for (const e of errors) console.log('  ERROR ' + e);
+    if (!argv.quiet) for (const w of warnings) console.log('  WARN  ' + w);
+    if (errors.length) console.log(NL + 'Исправьте ошибки до красного прогона.');
+  }
+  process.exit(errors.length ? 1 : 0);
+} catch (err) {
+  if (argv.json) console.log(JSON.stringify({ ok: false, errors: [err.message], warnings }, null, 2));
+  else reportFatal('task-lint', err.message);
+  process.exit(err.exitCode || 1);
+}
