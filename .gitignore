@@ -8,3 +8,8 @@ docs/subagent-workflow/guard.log
 docs/subagent-workflow/.node-path
 # subagent-workflow: журнал развёртывания
 docs/subagent-workflow/deploy.log
+
+# локальная память DSH и приватные файлы — не в репозиторий
+.dsh/
+.tmp/
+board/.sweep.json
