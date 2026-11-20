@@ -13,3 +13,5 @@ docs/subagent-workflow/deploy.log
 .dsh/
 .tmp/
 board/.sweep.json
+# движок workflow разворачивается DSH автоматически, плагину в репозитории не нужен
+docs/subagent-workflow/
