@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "architect": { "root": "<путь к воркспейсу архитектора>", "exchange": "<путь к его папке обмена>" },
+  "workspaces": [
+    { "id": "console",   "root": "<путь>", "exchange": "<путь>" },
+    { "id": "proxy",     "root": "<путь>", "exchange": "<путь>" },
+    { "id": "optimizer", "root": "<путь>", "exchange": "<путь>" }
+  ]
+}
