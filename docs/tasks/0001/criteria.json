@@ -1,0 +1,73 @@
+{
+  "task": "0001",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1",
+      "C3"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL board-actions: epic create route returned",
+      "C3": "FAIL board-actions-negative: transition route returned"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Доска: создание эпика и наряда, переход архитектора",
+      "command": "node docs/tasks/0001/checks/board-actions.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**",
+        "package.json"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Ядро доски: тесты переходов/журнала остаются зелёными",
+      "command": "node --test test/board.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C3",
+      "title": "Недопустимый переход отклоняется 400 invalid-transition",
+      "command": "node docs/tasks/0001/checks/negative.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
