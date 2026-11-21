@@ -92,7 +92,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     agreed        — все согласовались, декомпозиция разрешена;
     decomposed    — наряды созданы;
     in-progress   — хотя бы один наряд не терминален;
-    accepted      — все наряды accepted, цепочка стыков и эталонная серия зелёные;
+    accepted      — все наряды accepted, цепочка стыков и Результат подтверждены;
     done          — эпик закрыт;
     blocked       — есть наряд в blocked без решения;
     needs-decision — требует вердикта архитектора (таймаут согласования, тупик зависимостей).
@@ -105,8 +105,8 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     agreed -> decomposed    архитектор, после создания нарядов;
     decomposed -> in-progress  мотор, когда первый наряд перешёл в in-progress;
     in-progress -> accepted  мотор, когда все наряды accepted;
-    accepted -> done        архитектор (эталонная серия зелёная, решение закрыть);
-    accepted -> rework      архитектор, по [scenario-failed];
+    accepted -> done        архитектор (Результат достигнут, решение закрыть);
+    accepted -> rework      архитектор, по [result-failed];
     любое -> blocked        мотор, когда есть наряд в blocked;
     blocked -> needs-decision  архитектор.
 
@@ -128,7 +128,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     in-progress -> integration мотор, по [stage-ready] с непустым evidence;
     integration -> accepted   архитектор, вердикт по стыку;
     integration -> rework     архитектор, отказ стыка;
-    accepted -> rework        архитектор, по [scenario-failed];
+    accepted -> rework        архитектор, по [result-failed];
     in-progress -> agreed     мотор, по истечении lease_until;
     любое -> blocked          мотор, по [blocked] с причиной;
     blocked -> agreed         архитектор, после снятия блокировки;
@@ -148,8 +148,8 @@ Session обязателен в любом письме: сторону опре
 
 От исполнителя архитектору:
 
-    [agree-epic]      — согласие с эпиком и своей частью; payload: contracts[], criteria, срок;
-    [interface-agreed]— подтверждение версии контракта обмена для наряда; payload: наряд, версии;
+    [agree-epic]      — согласие с эпиком и своей частью; payload: criteria, срок;
+    [interface-agreed]— подтверждение спеки наряда; payload: наряд, спека;
     [task-accept]     — взятие наряда; payload: наряд, lease_until;
     [stage-ready]     — результат стадии; payload: наряд, evidence[];
     [blocked]         — блокировка; payload: наряд, причина, blocked_by[];
@@ -164,7 +164,7 @@ Session обязателен в любом письме: сторону опре
     [duplicate]         — письмо уже обработано (повтор без изменения состояния);
     [unknown-card]      — карточка не найдена;
     [lease-expired]     — лиз истёк, наряд возвращён в agreed;
-    [epic-invite]       — приглашение к согласованию эпика; payload: epic, title, contracts, agree_until;
+    [epic-invite]       — приглашение к согласованию эпика; payload: epic, title, result, agree_until;
     [task-offer]        — уведомление воркспейса о новом наряде; payload: task, epic, workspace, title, spec;
     [subtask-approved] / [subtask-rejected] — вердикт по плану подзадач;
     [board-repaired]    — доска восстановлена из журнала после расхождения.
@@ -186,7 +186,7 @@ Session обязателен в любом письме: сторону опре
 Append-only, одна строка JSON на событие. События и схемы:
 
     kind=transition: { at, kind, epic, card, from, to, by, letter, proof, lease_until?, revision }
-    kind=agree:      { at, kind, epic, workspace, contracts[], criteria, letter }
+    kind=agree:      { at, kind, epic, workspace, criteria, letter }
     kind=subtask:    { at, kind, epic, card, delta_done, letter }
     kind=sweep:      { at, kind, summary: { applied, rejected, expired }, letter? }
     kind=repair:     { at, kind, epic?, card?, from, to, reason }

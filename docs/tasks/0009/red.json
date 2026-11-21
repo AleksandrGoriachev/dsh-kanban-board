@@ -1,0 +1,81 @@
+{
+  "version": 5,
+  "kind": "red",
+  "task": "0009",
+  "createdAt": "2026-11-21T22:25:41.159Z",
+  "base": "HEAD",
+  "baseSha": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+  "headSha": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+  "contractCommit": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+  "criteriaSha256": "973a8d817a9e70fdee54cb6ade704be4f86113f8a45aff93648da64667af3dfa",
+  "criteriaJsonSha256": "c738dc1e0229aa51636ac9deb672375ada520a3eecc039244b5a41212f4f73aa",
+  "dirtyPaths": [
+    "docs/tasks/0009/criteria.lock"
+  ],
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0009/checks/cleanup.mjs",
+      "exitCode": 1,
+      "durationMs": 554,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "d662e59c5df7f96890e4f82478272f5b446ec7248e43a030e7dc37b16055f6b7",
+      "stdoutPreview": "",
+      "stderrPreview": "FAIL cleanup: остались следы старой модели — lib/api.js: 2; lib/motor.js: 4; docs/PROTOCOL.md: 7; test/motor.test.mjs: 3\n"
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 1990,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "76d0167a9f12b8a6b193534ca3f1cefcd4aa53a6bc6878b296e3cb391571a3d2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ GET /kanban/api/board отдаёт эпики, наряды и журнал (44.6559ms)\n✔ GET /kanban/api/status: реалм и зависимость установлена (8.545ms)\n✔ POST /kanban/api/sweep без confirm → 400 (18.8488ms)\n✔ POST /kanban/api/deps/install вызывает installBundle (15.9746ms)\n✔ не-loopback запрос → 403 (12.3025ms)\n✔ путь вне /kanban → 404 (8.8495ms)\n✔ ensureDependencies ставит недостающую зависимость (9.0444ms)\n✔ GET /kanban/api/workspaces отдаёт зарегистрированные воркспейсы (3.9233ms)\n✔ GET /kanban/api/realm до настройки → configured false (4.1036ms)\n✔ POST /kanban/api/realm сохраняет реалм из меню и включает доску (21.467ms)\n✔ apply регистрирует /kanban на webServer (14.7032ms)\n✔ POST /api/epic создаёт эпик, /api/board отдаёт допустимые переходы (29.6565ms)\n✔ POST /api/transition двигает эпик draft → agreeing и отклоняет недопустимый (104.1848ms)\n✔ POST /api/task создаёт наряд под эпиком (62.9517ms)\n✔ карточка: parse ↔ render сохраняет мета и тело (3.3615ms)\n✔ эпик: draft → agreeing разрешён архитектору (40.2888ms)\n✔ эпик: draft → done запрещён, список допустимых назван (17.3606ms)\n✔ несуществующая карточка → [unknown-card] (5.5022ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (54.6611ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (37.4186ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (78.024ms)\n✔ повтор письма → [duplicate], состояние не меняется (54.7495ms)\n✔ stale revision отклоняется (34.1166ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (71.8845ms)\n✔ sweep: истёкший agree_until → needs-decision (90.3564ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (54.7824ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (39.952ms)\n✔ создание карточек без явного id — системный UUID (19.5321ms)\n✔ createEpic требует название, createTask — эпик (2.8216ms)\n✔ createEpic сохраняет Результат эпика (15.0707ms)\n✔ createTask сохраняет спеку работы (17.7565ms)\n✔ маркер и payload читаются из Subject и тела (4.5171ms)\n✔ renderLetter: шапка идёт в фиксированном порядке, тело отделено пустой строкой (0.8213ms)\n✔ processLetter: [task-accept] переводит agreed → in-progress (64.1466ms)\n✔ processLetter: [stage-ready] без evidence → [transition-rejected] (65.5944ms)\n✔ processLetter: [stage-ready] с evidence → integration (74.9773ms)\n✔ processLetter: [blocked] → blocked (64.0883ms)\n✔ processLetter: неизвестный маркер не применяется (35.4595ms)\n✔ sweepOutboxes: читает новое письмо, пишет ответ, повторно не берёт (86.3751ms)\n✔ sweepOutboxes: письмо без Session не обрабатывается (51.7962ms)\n✔ processLetter: [agree-epic] вне agreeing отклоняется (16.5674ms)\n✔ processLetter: [agree-epic] частичное согласие фиксируется (38.8255ms)\n✔ processLetter: повтор [agree-epic] → duplicate (39.4075ms)\n✔ processLetter: все involved согласны → эпик agreed (54.4263ms)\n✔ processLetter: [agree-epic] без contracts принимается (61.2249ms)\n✔ offerTask пишет письмо [task-offer] адресату в outbox (22.615ms)\nℹ tests 46\nℹ suites 0\nℹ pass 46\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1245.7633\n",
+      "stderrPreview": ""
+    }
+  ],
+  "executed": 2,
+  "failed": 1,
+  "failedIds": [
+    "C1"
+  ],
+  "allGreen": false,
+  "redProven": true,
+  "redExpectation": {
+    "configured": true,
+    "ok": true,
+    "errors": [],
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "checkDefects": [],
+    "reasonChecks": [
+      {
+        "id": "C1",
+        "ok": true,
+        "distance": 0,
+        "total": 1,
+        "window": 25
+      }
+    ],
+    "reasonWindow": 25
+  },
+  "bypasses": {
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "log": "red.log"
+}

@@ -180,7 +180,7 @@ test('processLetter: [agree-epic] частичное согласие фикси
   try {
     createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console', 'proxy'] });
     assert.equal(apply(dir, { card: 'E2', from: 'draft', to: 'agreeing', by: 'architect' }).ok, true);
-    const letter = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2', contracts: ['1.0'], criteria: 'стык ок' }) + '\n');
+    const letter = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2', criteria: 'стык ок' }) + '\n');
     const r = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l6.md' });
     assert.equal(r.ok, true);
     assert.equal(r.code, 'agreed-recorded');
@@ -217,7 +217,7 @@ test('processLetter: все involved согласны → эпик agreed', () =
   } finally { cleanup(dir); }
 });
 
-test('processLetter: [agree-epic] без contracts принимается', () => {
+test('processLetter: [agree-epic] без версий принимается', () => {
   const dir = tmp('kanban-');
   try {
     createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console'] });
@@ -227,7 +227,7 @@ test('processLetter: [agree-epic] без contracts принимается', () =
     assert.equal(r.ok, true);
     const card = loadCard(dir, 'E2');
     assert.ok(card.meta.agreed.console);
-    assert.equal(card.meta.agreed.console.contracts, undefined);
+    assert.deepEqual(Object.keys(card.meta.agreed.console).sort(), ['at', 'criteria']);
     assert.equal(card.meta.status, 'agreed');
   } finally { cleanup(dir); }
 });
