@@ -165,6 +165,7 @@ Session обязателен в любом письме: сторону опре
     [duplicate]         — письмо уже обработано (повтор без изменения состояния);
     [unknown-card]      — карточка не найдена;
     [lease-expired]     — лиз истёк, наряд возвращён в agreed;
+    [epic-invite]       — приглашение к согласованию эпика; payload: epic, title, contracts, agree_until;
     [subtask-approved] / [subtask-rejected] — вердикт по плану подзадач;
     [board-repaired]    — доска восстановлена из журнала после расхождения.
 

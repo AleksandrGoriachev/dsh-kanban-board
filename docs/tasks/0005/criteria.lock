@@ -1,0 +1,62 @@
+{
+  "version": 3,
+  "task": "0005",
+  "taskFileSha256": "b87512e1490b0d5bc02ab9d92383497f2a4b788e6c6569d69fbf22f6be165cc5",
+  "criteriaSha256": "efd24f220f89b6144af4402231b6b1dbd2fdb43a8f73a0ae48d6f728ac80e65f",
+  "criteriaJsonSha256": "c67b760c6f90ee4642581539a463e5ca12381f6f9f53315602ab27b56e4e10b8",
+  "attackSha256": null,
+  "contractCommit": "034ad09665d7216d2e00687d0fcf67ac3943e0cc",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "lib/**",
+      "test/**",
+      "docs/PROTOCOL.md",
+      "docs/tasks/0005/**"
+    ],
+    "protectedPaths": [
+      "checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0005/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0004/checks/agree-epic.mjs",
+        "cwd": ".",
+        "timeoutMs": 60000,
+        "expect": {
+          "exitCode": 0
+        },
+        "covers": [
+          "docs/PROTOCOL.md",
+          "lib/**"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass [1-9]"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-21T20:50:08.238Z",
+  "tool": "subagent-workflow/2.6.88"
+}

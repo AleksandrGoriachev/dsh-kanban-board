@@ -161,3 +161,57 @@ test('sweepOutboxes: письмо без Session не обрабатываетс
     assert.equal(loadCard(dir, 'E1-1').meta.status, 'agreed');
   } finally { cleanup(dir); cleanup(realmDir); }
 });
+
+test('processLetter: [agree-epic] вне agreeing отклоняется', () => {
+  const dir = tmp('kanban-');
+  try {
+    createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console'] });
+    const letter = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2' }) + '\n');
+    const r = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l6.md' });
+    assert.equal(r.ok, false);
+    assert.equal(r.code, 'from-mismatch');
+    assert.equal(loadCard(dir, 'E2').meta.status, 'draft');
+  } finally { cleanup(dir); }
+});
+
+test('processLetter: [agree-epic] частичное согласие фиксируется', () => {
+  const dir = tmp('kanban-');
+  try {
+    createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console', 'proxy'] });
+    assert.equal(apply(dir, { card: 'E2', from: 'draft', to: 'agreeing', by: 'architect' }).ok, true);
+    const letter = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2', contracts: ['1.0'], criteria: 'стык ок' }) + '\n');
+    const r = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l6.md' });
+    assert.equal(r.ok, true);
+    assert.equal(r.code, 'agreed-recorded');
+    const card = loadCard(dir, 'E2');
+    assert.equal(card.meta.status, 'agreeing');
+    assert.ok(card.meta.agreed.console);
+  } finally { cleanup(dir); }
+});
+
+test('processLetter: повтор [agree-epic] → duplicate', () => {
+  const dir = tmp('kanban-');
+  try {
+    createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console', 'proxy'] });
+    assert.equal(apply(dir, { card: 'E2', from: 'draft', to: 'agreeing', by: 'architect' }).ok, true);
+    const letter = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2' }) + '\n');
+    assert.equal(processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l6.md' }).ok, true);
+    const dup = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l6.md' });
+    assert.equal(dup.code, 'duplicate');
+    assert.equal(loadCard(dir, 'E2').meta.status, 'agreeing');
+  } finally { cleanup(dir); }
+});
+
+test('processLetter: все involved согласны → эпик agreed', () => {
+  const dir = tmp('kanban-');
+  try {
+    createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console', 'proxy'] });
+    assert.equal(apply(dir, { card: 'E2', from: 'draft', to: 'agreeing', by: 'architect' }).ok, true);
+    const first = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2' }) + '\n');
+    assert.equal(processLetter({ boardDir: dir, letter: first, workspace: 'console', file: 'l6.md' }).ok, true);
+    const second = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2' }) + '\n');
+    const r = processLetter({ boardDir: dir, letter: second, workspace: 'proxy', file: 'l7.md' });
+    assert.equal(r.ok, true);
+    assert.equal(loadCard(dir, 'E2').meta.status, 'agreed');
+  } finally { cleanup(dir); }
+});
