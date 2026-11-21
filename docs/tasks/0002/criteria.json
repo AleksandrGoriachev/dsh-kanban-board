@@ -1,0 +1,71 @@
+{
+  "task": "0002",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2",
+      "C3"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL client-design: нет маркеров дизайна"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Клиент: маркеры дизайна (тема, колонки, карточки)",
+      "command": "node docs/tasks/0002/checks/client-design.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Ядро доски не сломано",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C3",
+      "title": "API доски: маршруты и негативный переход",
+      "command": "node --test test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
