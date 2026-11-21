@@ -9,6 +9,7 @@ import path from 'node:path';
 import { apply, createEpic, createTask, loadCard } from '../lib/board.js';
 import { markerOf, parseLetter, payloadOf, renderLetter } from '../lib/letters.js';
 import { processLetter, sweepOutboxes } from '../lib/motor.js';
+import { offerTask } from '../lib/api.js';
 
 function tmp(prefix) { return fs.mkdtempSync(path.join(os.tmpdir(), prefix)); }
 function cleanup(dir) {
@@ -214,4 +215,38 @@ test('processLetter: все involved согласны → эпик agreed', () =
     assert.equal(r.ok, true);
     assert.equal(loadCard(dir, 'E2').meta.status, 'agreed');
   } finally { cleanup(dir); }
+});
+
+test('processLetter: [agree-epic] без contracts принимается', () => {
+  const dir = tmp('kanban-');
+  try {
+    createEpic(dir, { id: 'E2', title: 'эпик', involved: ['console'] });
+    assert.equal(apply(dir, { card: 'E2', from: 'draft', to: 'agreeing', by: 'architect' }).ok, true);
+    const letter = letterFor('agree-epic', 'Payload: ' + JSON.stringify({ epic: 'E2', criteria: 'выход Y' }) + '\n');
+    const r = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l8.md' });
+    assert.equal(r.ok, true);
+    const card = loadCard(dir, 'E2');
+    assert.ok(card.meta.agreed.console);
+    assert.equal(card.meta.agreed.console.contracts, undefined);
+    assert.equal(card.meta.status, 'agreed');
+  } finally { cleanup(dir); }
+});
+
+test('offerTask пишет письмо [task-offer] адресату в outbox', () => {
+  const dir = tmp('kanban-');
+  const realmDir = tmp('realm-');
+  try {
+    const epic = createEpic(dir, { id: 'E2', title: 'эпик', result: 'результат' });
+    const task = createTask(dir, { id: 'E2-1', epic: epic.id, title: 'наряд', workspace: 'console', spec: 'сделать X' });
+    const exchange = path.join(realmDir, 'architect', 'exchange');
+    const realm = { version: 1, architect: { root: path.join(realmDir, 'architect'), exchange }, workspaces: [] };
+    const written = offerTask({ runtime: { realm, boardDir: dir }, cardId: task.id, now: new Date('2026-01-01T00:00:00.000Z') });
+    assert.equal(written.length, 1);
+    const letter = parseLetter(fs.readFileSync(path.join(exchange, 'outbox', written[0]), 'utf8'));
+    assert.equal(letter.marker, 'task-offer');
+    assert.equal(letter.headers.To, 'console');
+    const payload = payloadOf(letter.body);
+    assert.equal(payload.task, task.id);
+    assert.equal(payload.spec, 'сделать X');
+  } finally { cleanup(dir); cleanup(realmDir); }
 });

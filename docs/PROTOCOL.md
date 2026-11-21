@@ -55,10 +55,9 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     title : string;
     status : enum — draft | agreeing | agreed | decomposed | in-progress | accepted | done | blocked | needs-decision;
     involved : string[] — id задействованных воркспейсов;
-    agreed : { <id-воркспейса> : { at : ISO, contracts : string[], criteria : string } } — зафиксированные согласия;
+    agreed : { <id-воркспейса> : { at : ISO, criteria : string } } — зафиксированные согласия (без версий);
     agree_until : ISO — срок согласования; если не задан, применяется agreeTimeoutMinutes конфига;
-    contracts : string[] — версии контрактов обмена, действующие в эпике;
-    scenario : string — ссылка/описание эталонной серии (стык стадий);
+    result : string — Результат, спека совокупности спек участников (формирует координатор при согласовании);
     created, updated : ISO;
     revision : number — растёт на каждую правку эпика.
 
@@ -73,7 +72,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     owner : string | null — id сессии исполнителя (если воркспейс отдал);
     lease_until : ISO | null — до какого момента наряд считается взятым;
     blocked_by : string[] — id нарядов, блокирующих этот;
-    contracts : string[] — версии контрактов, которые обязан соблюсти наряд;
+    spec : string — спека работы (что сделать + что ожидается на выходе);
     evidence : string[] — ссылки на письма/артефакты, доказывающие готовность;
     subtasks : { done : number, total : number } — счётчик подзадач;
     created, updated : ISO;
@@ -166,6 +165,7 @@ Session обязателен в любом письме: сторону опре
     [unknown-card]      — карточка не найдена;
     [lease-expired]     — лиз истёк, наряд возвращён в agreed;
     [epic-invite]       — приглашение к согласованию эпика; payload: epic, title, contracts, agree_until;
+    [task-offer]        — уведомление воркспейса о новом наряде; payload: task, epic, workspace, title, spec;
     [subtask-approved] / [subtask-rejected] — вердикт по плану подзадач;
     [board-repaired]    — доска восстановлена из журнала после расхождения.
 
@@ -281,15 +281,16 @@ integration->rework), закрытие эпика (accepted->done), декомп
 
 # 14. Сквозной пример (эпик от заведения до done)
 
-1. Архитектор создаёт эпик E1 (involved: console, proxy, optimizer; agree_until = +15 мин).
-2. console, proxy, optimizer присылают [agree-epic] каждый со своим Session; мотор фиксирует agreed.
-3. agreed достигнут -> мотор переводит E1 в agreed; архитектор раскладывает на наряды E1-1, E1-2, E1-3.
-4. Для каждого наряда стороны согласуют версии контрактов ([interface-agreed]); наряд -> agreed.
-5. console присылает [task-accept] по E1-1 с lease_until -> мотор ставит in-progress.
-6. console разложил наряд: [subtask-plan] -> архитектор [subtask-approved]; console шлёт [subtask-done] по мере.
-7. console присылает [stage-ready] с evidence -> E1-1 -> integration.
-8. Архитектор принимает стык: E1-1 -> accepted; аналогично proxy, optimizer.
-9. Все наряды accepted -> мотор переводит E1 в accepted; архитектор прогоняет эталонную серию и закрывает -> done.
+1. Пользователь описывает задачу координатору.
+2. Координатор формирует наряды: для каждого — воркспейс, спека работы (spec) и ожидаемый результат участника.
+3. Из спек нарядов координатор собирает эпик E1 с Результатом — спекой совокупности спек (involved: console, proxy, optimizer; agree_until = +15 мин) и создаёт наряды E1-1, E1-2, E1-3; воркспейсам уходят [task-offer].
+4. console, proxy, optimizer присылают [agree-epic] каждый со своим Session; согласие без версий — мотор фиксирует agreed[workspace] = { at, criteria } и, когда согласны все, переводит E1 в agreed.
+5. Контракты участников — ожидаемые результаты по нарядам (их спеки); отдельного согласования версий нет.
+6. console присылает [task-accept] по E1-1 с lease_until -> мотор ставит in-progress.
+7. console разложил наряд: [subtask-plan] -> архитектор [subtask-approved]; console шлёт [subtask-done] по мере.
+8. console присылает [stage-ready] с evidence -> E1-1 -> integration.
+9. Архитектор принимает стык: E1-1 -> accepted; аналогично proxy, optimizer.
+10. Все наряды accepted -> мотор переводит E1 в accepted; архитектор сверяет Результат и закрывает -> done.
 
 # 15. Формат ответов архитектора
 

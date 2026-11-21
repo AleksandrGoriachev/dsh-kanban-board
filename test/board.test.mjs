@@ -241,3 +241,24 @@ test('createEpic требует название, createTask — эпик', () =
     assert.throws(() => createTask(dir, { title: 'наряд', workspace: 'tv2' }), /эпик/);
   } finally { cleanup(dir); }
 });
+
+test('createEpic сохраняет Результат эпика', () => {
+  const dir = board();
+  try {
+    const result = 'Результат: заказ проходит от создания до оплаты';
+    const epic = createEpic(dir, { title: 'эпик', result });
+    assert.equal(epic.result, result);
+    assert.equal(loadCard(dir, epic.id).meta.result, result);
+  } finally { cleanup(dir); }
+});
+
+test('createTask сохраняет спеку работы', () => {
+  const dir = board();
+  try {
+    const spec = 'Сделай X; на выходе Y';
+    const epic = createEpic(dir, { id: 'E1', title: 'эпик' });
+    const task = createTask(dir, { epic: epic.id, title: 'наряд', workspace: 'tv2', spec });
+    assert.equal(task.spec, spec);
+    assert.equal(loadCard(dir, task.id).meta.spec, spec);
+  } finally { cleanup(dir); }
+});
