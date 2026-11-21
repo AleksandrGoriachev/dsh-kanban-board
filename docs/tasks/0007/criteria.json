@@ -1,0 +1,55 @@
+{
+  "task": "0007",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "результат эпика не сохранён"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Модель: Результат эпика, спека наряда, согласие, [task-offer]",
+      "command": "node docs/tasks/0007/checks/result-model.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "docs/PROTOCOL.md"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты и API зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
