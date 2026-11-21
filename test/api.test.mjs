@@ -148,6 +148,55 @@ test('ensureDependencies ставит недостающую зависимос�
   } finally { cleanup(root); }
 });
 
+test('GET /kanban/api/workspaces отдаёт зарегистрированные воркспейсы', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const runtime = createKanbanRuntime(
+      { realm: path.join(root, 'realm.json'), boardDir: 'board' },
+      { listWorkspaces: () => [{ path: root, title: 'arch' }] },
+    );
+    const result = await call(createWebHandler(runtime), 'GET', '/kanban/api/workspaces');
+    assert.equal(result.status, 200);
+    assert.equal(result.json.workspaces.length, 1);
+    assert.equal(result.json.workspaces[0].path, root);
+  } finally { cleanup(root); }
+});
+
+test('GET /kanban/api/realm до настройки → configured false', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const runtime = createKanbanRuntime({ realm: path.join(root, 'realm.json'), boardDir: 'board' });
+    const result = await call(createWebHandler(runtime), 'GET', '/kanban/api/realm');
+    assert.equal(result.status, 200);
+    assert.equal(result.json.configured, false);
+  } finally { cleanup(root); }
+});
+
+test('POST /kanban/api/realm сохраняет реалм из меню и включает доску', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const realmFile = path.join(root, 'realm.json');
+    const sub = path.join(root, 'sub');
+    const runtime = createKanbanRuntime(
+      { realm: realmFile, boardDir: 'board' },
+      { listWorkspaces: () => [{ path: root, title: 'arch' }, { path: sub, title: 'sub' }] },
+    );
+    const handler = createWebHandler(runtime);
+    const result = await call(handler, 'POST', '/kanban/api/realm', {
+      confirm: true,
+      architect: { root },
+      workspaces: [{ root: sub }],
+    });
+    assert.equal(result.status, 200);
+    assert.equal(result.json.realm.architect.root, root);
+    assert.equal(result.json.realm.workspaces[0].exchange, path.join(sub, 'coordination'));
+    assert.equal(runtime.boardDir, path.join(root, 'board'));
+    assert.ok(fs.existsSync(realmFile));
+    const status = await call(handler, 'GET', '/kanban/api/status');
+    assert.equal(status.json.realm.configured, true);
+  } finally { cleanup(root); }
+});
+
 test('apply регистрирует /kanban на webServer', async () => {
   const registered = [];
   const ctx = {
