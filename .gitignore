@@ -15,3 +15,7 @@ docs/subagent-workflow/deploy.log
 board/.sweep.json
 # движок workflow разворачивается DSH автоматически, плагину в репозитории не нужен
 docs/subagent-workflow/
+
+# собранные tarball релиза и бэкапы — не в репозиторий
+dist/
+board/.sweep.json

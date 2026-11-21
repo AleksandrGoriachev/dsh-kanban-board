@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "anchors": "docs/anchors.json",
+  "algo": "sha256",
+  "hash": "7369ba5dc15c23bbbc7b43a93a1da6c07e20d19b9e6116ac18fed850eab1361e",
+  "bytes": 5962,
+  "layer": "project",
+  "sides": "project",
+  "enforcedBy": "nodes",
+  "by": [
+    "owner"
+  ],
+  "at": "2026-11-21T11:49:12.074Z",
+  "note": "Проектные якоря dsh-kanban-board (v3): утверждение владельца.",
+  "signature": {
+    "keyId": "human-owner",
+    "algo": "ed25519",
+    "covers": "hash+by+at",
+    "value": "6DWP2+7VPT7E81n3dr+ES7mH4fCcEY9UcWgiOc551c7PHcEnznmJVDDSPo0qj0pCGxI+ujE2VFtSgj+GytuBCA=="
+  },
+  "publicKeyFingerprint": "9d3f9169af74fdcd"
+}

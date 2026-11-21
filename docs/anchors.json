@@ -1,0 +1,143 @@
+{
+  "version": 3,
+  "note": "Проектные семантические якоря dsh-kanban-board. Черновик (status=inWork): проверки ещё не реализованы; после появления тестов — semi/auto. Источник: docs/PROTOCOL.md §11 (инварианты), §12 (граничные случаи).",
+  "anchors": [
+    {
+      "id": "P1",
+      "claim": "Карточки доски и журнал переходов пишет только архитектор (мотор или его сессия); исполнитель меняет состояние только письмом, карточку не пишет.",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "journal",
+      "proof": "board/journal.jsonl: у каждой строки kind=transition поле by — архитектор/мотор; в git-диффе доски нет карточек, изменённых исполнителем",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    },
+    {
+      "id": "P2",
+      "claim": "Журнал board/journal.jsonl append-only: строки не редактируются и не удаляются; карточка восстанавливается из журнала.",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "tool",
+      "proof": "node tools/journal-replay.mjs board/journal.jsonl → восстановленные статусы совпадают с карточками (0 расхождений); git log board/journal.jsonl — только добавления строк",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    },
+    {
+      "id": "P3",
+      "claim": "Любой переход состояния имеет подтверждающее письмо и строку журнала; правка карточки в обход apply — дефект.",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "journal",
+      "proof": "board/journal.jsonl: у каждой kind=transition есть letter (путь письма); node tools/journal-replay.mjs → journal<->cards 0 расхождений",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    },
+    {
+      "id": "P4",
+      "claim": "revision карточки строго монотонный; переход с revision меньше текущего отклоняется (stale).",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "plugin-test",
+      "proof": "node test/revision.test.mjs → stale-переход отвергнут, revision не уменьшился",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    },
+    {
+      "id": "P5",
+      "claim": "subtasks.done не больше subtasks.total; owner и lease_until появляются и снимаются вместе.",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "plugin-test",
+      "proof": "node test/subtasks.test.mjs → done<=total; node test/lease.test.mjs → owner и lease_until появляются/снимаются вместе",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    },
+    {
+      "id": "P6",
+      "claim": "Эпик не переходит в работу, пока не agreed всеми involved.",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "plugin-test",
+      "proof": "node test/epic.test.mjs → эпик остаётся agreeing, пока не согласились все involved; переход в работу заблокирован",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор",
+          "исполнитель"
+        ]
+      }
+    },
+    {
+      "id": "P7",
+      "claim": "Письмо без Session не обрабатывается; повтор письма даёт [duplicate] и не меняет состояние.",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "tool",
+      "proof": "node test/letters.test.mjs → письмо без Session не обработано; повтор письма → [duplicate], состояние не изменилось",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    },
+    {
+      "id": "P8",
+      "claim": "Просроченный лиз возвращает наряд в agreed, снимает owner/lease_until и шлёт письмо [lease-expired].",
+      "layer": "project",
+      "enforcedBy": "nodes",
+      "check": "tool",
+      "proof": "node test/lease.test.mjs → lease_until в прошлом → наряд в agreed, owner/lease сняты, письмо [lease-expired]",
+      "status": "inWork",
+      "owner": "owner",
+      "workspace": "dsh-kanban-board",
+      "sides": "project",
+      "appliesTo": {
+        "roles": [
+          "координатор"
+        ]
+      }
+    }
+  ]
+}

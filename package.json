@@ -1,0 +1,34 @@
+{
+  "name": "dsh-kanban-board",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DSH plugin: kanban board distributing tasks between realm workspaces (not sessions), per docs/PROTOCOL.md v1.0",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "docs/PROTOCOL.md",
+    "examples"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  }
+}

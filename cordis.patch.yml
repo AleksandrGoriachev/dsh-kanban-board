@@ -1,0 +1,18 @@
+# Bundle patch for dsh-kanban-board.
+#
+# The reconciler appends this package to `dsh.profile.bundles` and applies this
+# patch layer. `realm` — абсолютный путь к JSON-конфигу реалма (PROTOCOL §3);
+# пусто — «не настроено»: панель показывает инструкцию, а не пустую доску.
+# `boardDir` — каталог доски внутри корня архитектора (epics/, tasks/, journal.jsonl).
+# `dependencies` — плагины, без которых доска не работает: при активации хост
+# проверяет их через pluginManager и ставит недостающие по installSpec.
+- insert:
+    - id: dsh-kanban-board
+      name: dsh-kanban-board
+      config:
+        realm: ''
+        boardDir: board
+        dependencies:
+          - id: dsh-project-graph
+            installSpec: ''
+            optional: false
