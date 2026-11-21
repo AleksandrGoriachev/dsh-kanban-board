@@ -1,0 +1,109 @@
+{
+  "version": 5,
+  "kind": "red",
+  "task": "0001",
+  "createdAt": "2026-11-21T17:44:44.183Z",
+  "base": "HEAD",
+  "baseSha": "617c878001e08d15e568aa5a113c44cb567c3a42",
+  "headSha": "617c878001e08d15e568aa5a113c44cb567c3a42",
+  "contractCommit": "617c878001e08d15e568aa5a113c44cb567c3a42",
+  "criteriaSha256": "2a97711c645693b1c79aae01d147c8ccf53b7b08e68c9fd256249d741c00a627",
+  "criteriaJsonSha256": "838d3e04c67fbc8744427d7876ac470ba507a6ec03cefdd251a7c74d74c8e745",
+  "dirtyPaths": [
+    "docs/tasks/0001/criteria.lock"
+  ],
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0001/checks/board-actions.mjs",
+      "exitCode": 1,
+      "durationMs": 835,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "ede33c4d9f5966eef9d6d436c1b7368e9292b302c7b37318366f252c6b32e747",
+      "stdoutPreview": "",
+      "stderrPreview": "node:internal/modules/esm/resolve:275\r\n    throw new ERR_MODULE_NOT_FOUND(\r\n          ^\r\n\r\nError [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\\Users\\Goryachev\\Documents\\deepseek-harness\\dsh-kanban-board\\docs\\lib\\api.js' imported from C:\\Users\\Goryachev\\Documents\\deepseek-harness\\dsh-kanban-board\\docs\\tasks\\0001\\checks\\board-actions.mjs\r\n    at finalizeResolution (node:internal/modules/esm/resolve:275:11)\r\n    at moduleResolve (node:internal/modules/esm/resolve:865:10)\r\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\r\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:712:20)\r\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:729:38)\r\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:758:52)\r\n    at #resolve (node:internal/modules/esm/loader:694:17)\r\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:614:35)\r\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33)\r\n    at ModuleJob.link (node:internal/modules/esm/module_job:245:17) {\r\n  code: 'ERR_MODULE_NOT_FOUND',\r\n  url: 'file:///C:/Users/Goryachev/Documents/deepseek-harness/dsh-kanban-board/docs/lib/api.js'\r\n}\r\n\r\nNode.js v25.4.0\r\n"
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2397,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "910f632d2b62c50543d081fc4cb72b53c1578af9a208b31e4270daac9c11bdab",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ карточка: parse ↔ render сохраняет мета и тело (1.4414ms)\n✔ эпик: draft → agreeing разрешён архитектору (68.9181ms)\n✔ эпик: draft → done запрещён, список допустимых назван (84.0907ms)\n✔ несуществующая карточка → [unknown-card] (4.7188ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (75.874ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (87.2432ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (123.7884ms)\n✔ повтор письма → [duplicate], состояние не меняется (82.3836ms)\n✔ stale revision отклоняется (77.9233ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (96.8591ms)\n✔ sweep: истёкший agree_until → needs-decision (61.9544ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (82.9882ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (107.2853ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1409.5809\n",
+      "stderrPreview": ""
+    },
+    {
+      "id": "C3",
+      "command": "node docs/tasks/0001/checks/negative.mjs",
+      "exitCode": 1,
+      "durationMs": 804,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "00dcaaf386c07f0858868eb74a59f9307885ef9cc30712ed4789b66920d67ad1",
+      "stdoutPreview": "",
+      "stderrPreview": "node:internal/modules/esm/resolve:275\r\n    throw new ERR_MODULE_NOT_FOUND(\r\n          ^\r\n\r\nError [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\\Users\\Goryachev\\Documents\\deepseek-harness\\dsh-kanban-board\\docs\\lib\\api.js' imported from C:\\Users\\Goryachev\\Documents\\deepseek-harness\\dsh-kanban-board\\docs\\tasks\\0001\\checks\\negative.mjs\r\n    at finalizeResolution (node:internal/modules/esm/resolve:275:11)\r\n    at moduleResolve (node:internal/modules/esm/resolve:865:10)\r\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\r\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:712:20)\r\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:729:38)\r\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:758:52)\r\n    at #resolve (node:internal/modules/esm/loader:694:17)\r\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:614:35)\r\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33)\r\n    at ModuleJob.link (node:internal/modules/esm/module_job:245:17) {\r\n  code: 'ERR_MODULE_NOT_FOUND',\r\n  url: 'file:///C:/Users/Goryachev/Documents/deepseek-harness/dsh-kanban-board/docs/lib/api.js'\r\n}\r\n\r\nNode.js v25.4.0\r\n"
+    }
+  ],
+  "executed": 3,
+  "failed": 2,
+  "failedIds": [
+    "C1",
+    "C3"
+  ],
+  "allGreen": false,
+  "redProven": false,
+  "redExpectation": {
+    "configured": true,
+    "ok": false,
+    "errors": [
+      "redExpect: критерий C1 упал не по ожидаемой причине (FAIL board-actions: epic create route returned)",
+      "redExpect: критерий C3 упал не по ожидаемой причине (FAIL board-actions-negative: transition route returned)"
+    ],
+    "mustFail": [
+      "C1",
+      "C3"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "checkDefects": [],
+    "reasonChecks": [
+      {
+        "id": "C1",
+        "ok": false,
+        "distance": null,
+        "total": 18,
+        "window": 25
+      },
+      {
+        "id": "C3",
+        "ok": false,
+        "distance": null,
+        "total": 18,
+        "window": 25
+      }
+    ],
+    "reasonWindow": 25
+  },
+  "bypasses": {
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "log": "red.log"
+}

@@ -7,8 +7,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { createKanbanRuntime, createWebHandler } from '../../../lib/api.js';
-import { loadCard } from '../../../lib/board.js';
+import { createKanbanRuntime, createWebHandler } from '../../../../lib/api.js';
+import { loadCard } from '../../../../lib/board.js';
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kanban-check-'));
 try {
