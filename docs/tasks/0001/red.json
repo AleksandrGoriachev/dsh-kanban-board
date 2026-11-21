@@ -1,0 +1,109 @@
+{
+  "version": 5,
+  "kind": "red",
+  "task": "0001",
+  "createdAt": "2026-11-21T17:47:27.041Z",
+  "base": "HEAD",
+  "baseSha": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "headSha": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "contractCommit": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "criteriaSha256": "2a97711c645693b1c79aae01d147c8ccf53b7b08e68c9fd256249d741c00a627",
+  "criteriaJsonSha256": "838d3e04c67fbc8744427d7876ac470ba507a6ec03cefdd251a7c74d74c8e745",
+  "dirtyPaths": [
+    "docs/tasks/0001/criteria.lock",
+    "docs/tasks/0001/gates.jsonl",
+    "docs/tasks/0001/gates.jsonl.tip",
+    "docs/tasks/0001/red.json"
+  ],
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0001/checks/board-actions.mjs",
+      "exitCode": 1,
+      "durationMs": 935,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "2aca75c8b2e5efcc78503dacc09024d9c43c76385c996e24e25c798e4660065d",
+      "stdoutPreview": "",
+      "stderrPreview": "FAIL board-actions: epic create route returned 405 (method POST is not allowed)\n"
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2837,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "fa8158523b0008dc94a04e69c8404e9f907c397f6a10115175309f9f8f6fe34f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ карточка: parse ↔ render сохраняет мета и тело (2.2185ms)\n✔ эпик: draft → agreeing разрешён архитектору (82.3726ms)\n✔ эпик: draft → done запрещён, список допустимых назван (38.5954ms)\n✔ несуществующая карточка → [unknown-card] (6.4524ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (135.8609ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (93.2654ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (143.722ms)\n✔ повтор письма → [duplicate], состояние не меняется (116.947ms)\n✔ stale revision отклоняется (74.2446ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (161.005ms)\n✔ sweep: истёкший agree_until → needs-decision (110.2098ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (147.7857ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (86.8752ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1686.7333\n",
+      "stderrPreview": ""
+    },
+    {
+      "id": "C3",
+      "command": "node docs/tasks/0001/checks/negative.mjs",
+      "exitCode": 1,
+      "durationMs": 921,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "bc58418b0796b67d11d0f2f84806893877ca9e22badf55ececd5eeadb3e0a6ad",
+      "stdoutPreview": "",
+      "stderrPreview": "FAIL board-actions-negative: transition route returned 405 (ожидался 400)\n"
+    }
+  ],
+  "executed": 3,
+  "failed": 2,
+  "failedIds": [
+    "C1",
+    "C3"
+  ],
+  "allGreen": false,
+  "redProven": true,
+  "redExpectation": {
+    "configured": true,
+    "ok": true,
+    "errors": [],
+    "mustFail": [
+      "C1",
+      "C3"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "checkDefects": [],
+    "reasonChecks": [
+      {
+        "id": "C1",
+        "ok": true,
+        "distance": 0,
+        "total": 1,
+        "window": 25
+      },
+      {
+        "id": "C3",
+        "ok": true,
+        "distance": 0,
+        "total": 1,
+        "window": 25
+      }
+    ],
+    "reasonWindow": 25
+  },
+  "bypasses": {
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "log": "red.log"
+}

@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createKanbanRuntime, createWebHandler, ensureDependencies } from '../lib/api.js';
-import { createEpic, createTask } from '../lib/board.js';
+import { createEpic, createTask, loadCard } from '../lib/board.js';
 
 function tmp(prefix) { return fs.mkdtempSync(path.join(os.tmpdir(), prefix)); }
 function cleanup(dir) {
@@ -198,20 +198,73 @@ test('POST /kanban/api/realm сохраняет реалм из меню и вк
 });
 
 test('apply регистрирует /kanban на webServer', async () => {
-  const registered = [];
-  const ctx = {
-    get: () => null,
-    inject: (services, callback) => callback({
-      webServer: { register: (route) => registered.push(route) },
+  const root = tmp('kanban-realm-');
+  try {
+    const registered = [];
+    const ctx = {
+      get: () => null,
+      inject: (services, callback) => callback({
+        webServer: { register: (route) => registered.push(route) },
+        effect: (fn) => fn(),
+      }),
       effect: (fn) => fn(),
-    }),
-    effect: (fn) => fn(),
-  };
-  const { apply } = await import('../lib/index.js');
-  const runtime = apply(ctx, { realm: '', boardDir: 'board', dependencies: [] });
-  assert.equal(runtime.boardDir, '');
-  assert.equal(registered.length, 1);
-  assert.equal(registered[0].kind, 'prefix');
-  assert.equal(registered[0].path, '/kanban');
-  assert.equal(typeof registered[0].handler, 'function');
+    };
+    const { apply } = await import('../lib/index.js');
+    const runtime = apply(ctx, { realm: path.join(root, 'realm.json'), boardDir: 'board', dependencies: [] });
+    assert.equal(runtime.boardDir, '');
+    assert.equal(registered.length, 1);
+    assert.equal(registered[0].kind, 'prefix');
+    assert.equal(registered[0].path, '/kanban');
+    assert.equal(typeof registered[0].handler, 'function');
+  } finally { cleanup(root); }
+});
+
+test('POST /api/epic создаёт эпик, /api/board отдаёт допустимые переходы', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const realmFile = path.join(root, 'realm.json');
+    const runtime = createKanbanRuntime({ realm: realmFile, boardDir: 'board' });
+    const handler = createWebHandler(runtime);
+    await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
+    const created = await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', involved: ['tv2'] });
+    assert.equal(created.status, 200);
+    assert.equal(created.json.epic.status, 'draft');
+    const boardResp = await call(handler, 'GET', '/kanban/api/board');
+    assert.equal(boardResp.json.epics.length, 1);
+    assert.deepEqual(boardResp.json.epics[0].allowed, ['agreeing']);
+  } finally { cleanup(root); }
+});
+
+test('POST /api/transition двигает эпик draft → agreeing и отклоняет недопустимый', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const realmFile = path.join(root, 'realm.json');
+    const runtime = createKanbanRuntime({ realm: realmFile, boardDir: 'board' });
+    const handler = createWebHandler(runtime);
+    await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
+    await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', involved: [] });
+    const move = await call(handler, 'POST', '/kanban/api/transition', { confirm: true, card: 'E1', from: 'draft', to: 'agreeing', by: 'architect', revision: 1 });
+    assert.equal(move.status, 200);
+    assert.equal(move.json.ok, true);
+    assert.equal(loadCard(runtime.boardDir, 'E1').meta.status, 'agreeing');
+    const invalid = await call(handler, 'POST', '/kanban/api/transition', { confirm: true, card: 'E1', from: 'agreeing', to: 'done', by: 'architect' });
+    assert.equal(invalid.status, 400);
+    assert.equal(invalid.json.code, 'invalid-transition');
+  } finally { cleanup(root); }
+});
+
+test('POST /api/task создаёт наряд под эпиком', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const realmFile = path.join(root, 'realm.json');
+    const runtime = createKanbanRuntime({ realm: realmFile, boardDir: 'board' });
+    const handler = createWebHandler(runtime);
+    await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
+    await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', involved: [] });
+    const task = await call(handler, 'POST', '/kanban/api/task', { confirm: true, id: 'E1-1', epic: 'E1', workspace: 'tv2' });
+    assert.equal(task.status, 200);
+    assert.equal(task.json.task.status, 'proposed');
+    const boardResp = await call(handler, 'GET', '/kanban/api/board');
+    assert.equal(boardResp.json.tasks.length, 1);
+  } finally { cleanup(root); }
 });

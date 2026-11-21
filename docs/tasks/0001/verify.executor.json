@@ -1,0 +1,155 @@
+{
+  "version": 4,
+  "kind": "verify",
+  "acceptanceNonce": null,
+  "runKind": "self",
+  "task": "0001",
+  "createdAt": "2026-11-21T17:48:26.315Z",
+  "headSha": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "contractCommit": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "criteriaSha256": "2a97711c645693b1c79aae01d147c8ccf53b7b08e68c9fd256249d741c00a627",
+  "criteriaJsonSha256": "838d3e04c67fbc8744427d7876ac470ba507a6ec03cefdd251a7c74d74c8e745",
+  "taskFileSha256": "3334267d59110cd260950e8c0c31a2f92b83e212e1b768195553344782e27b1b",
+  "changedPaths": [
+    "docs/tasks/0001/criteria.lock",
+    "docs/tasks/0001/gates.jsonl",
+    "docs/tasks/0001/gates.jsonl.tip",
+    "docs/tasks/0001/red.json",
+    "lib/api.js",
+    "lib/client.js",
+    "package.json",
+    "test/api.test.mjs"
+  ],
+  "coverage": {
+    "declared": 5,
+    "covered": [
+      {
+        "path": "lib/api.js",
+        "criterion": "C1"
+      },
+      {
+        "path": "lib/client.js",
+        "criterion": "C1"
+      },
+      {
+        "path": "package.json",
+        "criterion": "C1"
+      },
+      {
+        "path": "test/api.test.mjs",
+        "criterion": "C1"
+      }
+    ],
+    "uncovered": [],
+    "mode": "fail",
+    "warnings": []
+  },
+  "effects": {
+    "required": false,
+    "checked": false,
+    "mode": "fail",
+    "declared": [],
+    "links": [],
+    "ok": true
+  },
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0001/checks/board-actions.mjs",
+      "exitCode": 0,
+      "durationMs": 932,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "20250ef780aa908c53216a4e64c0f32d611d7b60ddfc9f9df5bf564f33c9d2c9",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "OK board-actions: эпик, наряд созданы, переход draft→agreeing применён\n",
+      "stderrPreview": ""
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2217,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "a1776967cf67f55783e27010f92023929c5cf8eb6c7621d5cda5bbdbcb0d95cc",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ карточка: parse ↔ render сохраняет мета и тело (10.4616ms)\n✔ эпик: draft → agreeing разрешён архитектору (80.2117ms)\n✔ эпик: draft → done запрещён, список допустимых назван (90.0747ms)\n✔ несуществующая карточка → [unknown-card] (4.4623ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (76.7604ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (53.0299ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (101.5943ms)\n✔ повтор письма → [duplicate], состояние не меняется (73.8355ms)\n✔ stale revision отклоняется (53.2079ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (91.4356ms)\n✔ sweep: истёкший agree_until → needs-decision (67.7274ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (144.0188ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (53.7035ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1421.2039\n",
+      "stderrPreview": ""
+    },
+    {
+      "id": "C3",
+      "command": "node docs/tasks/0001/checks/negative.mjs",
+      "exitCode": 0,
+      "durationMs": 841,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "cbcd0ddb024496b51ef60bce892d3c5b08bc252502994ba8f1c1576652aa478b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "OK board-actions-negative: недопустимый переход отклонён 400 invalid-transition\n",
+      "stderrPreview": ""
+    }
+  ],
+  "executed": 3,
+  "failed": 0,
+  "manualSkipped": 0,
+  "allPassed": true,
+  "violations": [],
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false
+  },
+  "red": {
+    "baseSha": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+    "contractCommit": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+    "criteriaJsonSha256": "838d3e04c67fbc8744427d7876ac470ba507a6ec03cefdd251a7c74d74c8e745",
+    "failed": 2,
+    "failedIds": [
+      "C1",
+      "C3"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1",
+        "C3"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        },
+        {
+          "id": "C3",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    },
+    "bypasses": {
+      "allowDirty": false,
+      "allowBaseMismatch": false
+    },
+    "log": "red.log"
+  },
+  "worktreeDigest": "676d1c6d6d2d0727f81f23852158a9be4c83912a108838e4e3e53d59858cadb0",
+  "log": "verify.log"
+}
