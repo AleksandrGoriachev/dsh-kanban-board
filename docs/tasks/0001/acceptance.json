@@ -1,0 +1,152 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0001",
+  "title": "Доска: создание эпика и наряда, кнопки допустимых переходов архитектора",
+  "risk": "medium",
+  "taskFileSha256": "3334267d59110cd260950e8c0c31a2f92b83e212e1b768195553344782e27b1b",
+  "criteriaSha256": "2a97711c645693b1c79aae01d147c8ccf53b7b08e68c9fd256249d741c00a627",
+  "criteriaJsonSha256": "838d3e04c67fbc8744427d7876ac470ba507a6ec03cefdd251a7c74d74c8e745",
+  "contractCommit": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "baseCommit": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+  "candidateCommit": "d1b30bfce75e1f01a87dee9f21f307a342de8b35",
+  "tree": "e7b4404345f5a58f0b0be4d56a1cd3c6c98498cb",
+  "worktreeDigest": "676d1c6d6d2d0727f81f23852158a9be4c83912a108838e4e3e53d59858cadb0",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "deepseek-flash"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "6dd142e5-eeef-406b-8a84-c685fd2627f0",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "29c20a7e22b24838da54c76fdd3b64e9",
+    "runKind": "accept",
+    "startedAt": "2026-11-21T17:50:10.233Z",
+    "finishedAt": "2026-11-21T17:50:21.937Z",
+    "durationMs": 11705,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "85bb815a20522ef9dcf1394c857828845ab7d97fe94056c613b46e09f2e15a5f",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "baseSha": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+    "contractCommit": "6c02e63b3f03dbe645528c75e41c95be6a3c1b89",
+    "criteriaJsonSha256": "838d3e04c67fbc8744427d7876ac470ba507a6ec03cefdd251a7c74d74c8e745",
+    "failed": 2,
+    "failedIds": [
+      "C1",
+      "C3"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1",
+        "C3"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        },
+        {
+          "id": "C3",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0001/checks/board-actions.mjs",
+      "exitCode": 0,
+      "durationMs": 949,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2388,
+      "passed": true
+    },
+    {
+      "id": "C3",
+      "command": "node docs/tasks/0001/checks/negative.mjs",
+      "exitCode": 0,
+      "durationMs": 967,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-21T17:50:22.584Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "GJqXKs8h1VJVfwI/W380+ukqpMaXrXnO0kR8AcjM+sjVIK071Wjso7jdm8aPKw+Yp+cRJC/UHdKbFoK3VrulDg=="
+}
