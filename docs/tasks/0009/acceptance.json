@@ -1,0 +1,136 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0009",
+  "title": "Чистка следов старой модели (contracts/scenario) и версия 0.1.8",
+  "risk": "medium",
+  "taskFileSha256": "a7cddf7e34c1ebbea56f1732d1c5aa30a1e213c68fed526a611c95dae0216768",
+  "criteriaSha256": "973a8d817a9e70fdee54cb6ade704be4f86113f8a45aff93648da64667af3dfa",
+  "criteriaJsonSha256": "c738dc1e0229aa51636ac9deb672375ada520a3eecc039244b5a41212f4f73aa",
+  "contractCommit": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+  "baseCommit": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+  "candidateCommit": "ba93330eb9606a20ed99f600d581de98b397230a",
+  "tree": "dcf9f637b9614c9cf85198ccc1cf8d593ec48006",
+  "worktreeDigest": "252e725d7838d14de7089fb52f0329fdd195268d58517eff126b7c7acc0b2e95",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "3ec3938c-867b-44cd-a7ed-69a40e5a031f",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "7b544987d868f9544c1b1e88f908e684",
+    "runKind": "accept",
+    "startedAt": "2026-11-21T22:30:32.750Z",
+    "finishedAt": "2026-11-21T22:30:47.306Z",
+    "durationMs": 14568,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "8c855aa7bd5d9094267e0d1bc5724233477b93379c1ab933714c49e0b16b5c7e",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "baseSha": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+    "contractCommit": "37e418d3bc0fc1e0bbcecff70eda2e93ca566c86",
+    "criteriaJsonSha256": "c738dc1e0229aa51636ac9deb672375ada520a3eecc039244b5a41212f4f73aa",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0009/checks/cleanup.mjs",
+      "exitCode": 0,
+      "durationMs": 825,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2722,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-21T22:30:48.058Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "KCJK9xJePk/h5LjeOqwDXodDd1vWLWWtsgar1lDLngHJDEnm4PE/xl2K+YOtl7vkCZVj74CbjAad66KK9VBhCw=="
+}
