@@ -1,0 +1,144 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0002",
+  "title": "Клиент доски: дизайн из VictorKozachek/dsh-kanban (колонки, карточки, тема)",
+  "risk": "medium",
+  "taskFileSha256": "c226e285c814552fda3b1415e6b0f93b1922f8fd8cf2641b45bae87d9390f597",
+  "criteriaSha256": "7e4191fb95a671bc2ce376a694d2cb832fb3d8d4ba90ae0fbd6ba3549cc8bebc",
+  "criteriaJsonSha256": "ee4778eaf96ed31bf41c49a94c604647519caaa52f0dc93ccce61f543fde8fbf",
+  "contractCommit": "8aac9477648cefb7c5a3bd7ff97ca21db353362e",
+  "baseCommit": "8aac9477648cefb7c5a3bd7ff97ca21db353362e",
+  "candidateCommit": "ab25ae06c99cdfbfa843d2115902c76d36ef20a8",
+  "tree": "bf471b0a4b73c83b97389c0c20f77fdc832a4c0e",
+  "worktreeDigest": "51b9c2f861ef886fef6623a4f89b63b6a8886a0b2b0b2cb397da8c0bc6d4583f",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "be07054a-913e-4e11-aa97-c3120ae06c2a",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "a5dbc724f922741e27cd2682ba8bff97",
+    "runKind": "accept",
+    "startedAt": "2026-11-21T18:11:59.504Z",
+    "finishedAt": "2026-11-21T18:12:11.154Z",
+    "durationMs": 11651,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "7f94131194ebc187380c9e4c14fccda5b357be72dd4c7fcc9de1f230df56599d",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "baseSha": "8aac9477648cefb7c5a3bd7ff97ca21db353362e",
+    "contractCommit": "8aac9477648cefb7c5a3bd7ff97ca21db353362e",
+    "criteriaJsonSha256": "ee4778eaf96ed31bf41c49a94c604647519caaa52f0dc93ccce61f543fde8fbf",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2",
+        "C3"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0002/checks/client-design.mjs",
+      "exitCode": 0,
+      "durationMs": 873,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs",
+      "exitCode": 0,
+      "durationMs": 3191,
+      "passed": true
+    },
+    {
+      "id": "C3",
+      "command": "node --test test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2675,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-21T18:12:11.647Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "Ywc27sWnRrnWw+F+iKF0jBA3Gps6LaVIfhqpOp9rV1C/Pb2KvZjJSMesWN0brLdd//0kHmO2sp7bbCw54jxlBg=="
+}
