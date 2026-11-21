@@ -51,7 +51,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
 
 Машинные поля в мета-блоке JSON в HTML-комментарии в начале файла; тело — описание для человека.
 
-    id : string — уникальный идентификатор эпика, шаблон E<N>, N монотонно растёт;
+    id : string — системный UUID: генерирует плагин при создании, пользователь его не вводит;
     title : string;
     status : enum — draft | agreeing | agreed | decomposed | in-progress | accepted | done | blocked | needs-decision;
     involved : string[] — id задействованных воркспейсов;
@@ -64,7 +64,8 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
 
 ## 4.2 Карточка наряда — board/tasks/<EPIC>-<N>.md
 
-    id : string — <EPIC>-<N>, N уникален в эпике;
+    id : string — системный UUID (генерирует плагин), пользователь его не вводит;
+    title : string — короткое человеческое название наряда;
     epic : string — id эпика;
     workspace : string — id воркспейса-исполнителя;
     role : string | null — роль внутри воркспейса, если их несколько;

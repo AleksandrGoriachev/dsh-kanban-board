@@ -220,3 +220,24 @@ test('журнал append-only: события только добавляютс
     assert.equal(second[1].kind, 'transition');
   } finally { cleanup(dir); }
 });
+
+test('создание карточек без явного id — системный UUID', () => {
+  const dir = board();
+  try {
+    const epic = createEpic(dir, { title: 'эпик' });
+    assert.match(epic.id, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    const task = createTask(dir, { epic: epic.id, title: 'наряд', workspace: 'tv2' });
+    assert.match(task.id, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    assert.equal(task.epic, epic.id);
+    assert.equal(task.title, 'наряд');
+    assert.equal(loadCard(dir, task.id).meta.epic, epic.id);
+  } finally { cleanup(dir); }
+});
+
+test('createEpic требует название, createTask — эпик', () => {
+  const dir = board();
+  try {
+    assert.throws(() => createEpic(dir, {}), /название/);
+    assert.throws(() => createTask(dir, { title: 'наряд', workspace: 'tv2' }), /эпик/);
+  } finally { cleanup(dir); }
+});
