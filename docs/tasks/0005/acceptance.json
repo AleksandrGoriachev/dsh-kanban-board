@@ -1,0 +1,136 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0005",
+  "title": "Согласование эпика: [agree-epic], срок agree_until и приглашение участников",
+  "risk": "medium",
+  "taskFileSha256": "b87512e1490b0d5bc02ab9d92383497f2a4b788e6c6569d69fbf22f6be165cc5",
+  "criteriaSha256": "efd24f220f89b6144af4402231b6b1dbd2fdb43a8f73a0ae48d6f728ac80e65f",
+  "criteriaJsonSha256": "c67b760c6f90ee4642581539a463e5ca12381f6f9f53315602ab27b56e4e10b8",
+  "contractCommit": "034ad09665d7216d2e00687d0fcf67ac3943e0cc",
+  "baseCommit": "034ad09665d7216d2e00687d0fcf67ac3943e0cc",
+  "candidateCommit": "16c3eff645a7dda8913e6828f7393e6943055ac2",
+  "tree": "f474da0ff5101d79d6ecd66c30a360e9e8e0645f",
+  "worktreeDigest": "5ea10f25cd1d3d749d9da2a78d81309e377a1ebe7b44789c6092ab45315f47c2",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "24678a0b-3ddb-40bd-8785-c1e37a5c3434",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "84cf7cd2d902568e2c4ab87ba1e8a8a4",
+    "runKind": "accept",
+    "startedAt": "2026-11-21T20:57:14.251Z",
+    "finishedAt": "2026-11-21T20:57:25.759Z",
+    "durationMs": 11520,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "fbdc0407adb88c23c931e1ba57e3fd4aae013dbe7fdb13b5ce1ac40632e12852",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "baseSha": "034ad09665d7216d2e00687d0fcf67ac3943e0cc",
+    "contractCommit": "034ad09665d7216d2e00687d0fcf67ac3943e0cc",
+    "criteriaJsonSha256": "c67b760c6f90ee4642581539a463e5ca12381f6f9f53315602ab27b56e4e10b8",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 12,
+          "total": 16,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0004/checks/agree-epic.mjs",
+      "exitCode": 0,
+      "durationMs": 614,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2094,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-21T20:57:26.285Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "EUuoEuC5r/nhVZboly5sA7RuF0r+wdo0vgQk2sv0szSLIfEp5NlcqOZt74IkL1TkbZuxej1vqgaw+yStvlNDAg=="
+}
