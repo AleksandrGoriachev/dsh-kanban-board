@@ -147,3 +147,22 @@ test('ensureDependencies ставит недостающую зависимос�
     assert.deepEqual(second.installedNow, []);
   } finally { cleanup(root); }
 });
+
+test('apply регистрирует /kanban на webServer', async () => {
+  const registered = [];
+  const ctx = {
+    get: () => null,
+    inject: (services, callback) => callback({
+      webServer: { register: (route) => registered.push(route) },
+      effect: (fn) => fn(),
+    }),
+    effect: (fn) => fn(),
+  };
+  const { apply } = await import('../lib/index.js');
+  const runtime = apply(ctx, { realm: '', boardDir: 'board', dependencies: [] });
+  assert.equal(runtime.boardDir, '');
+  assert.equal(registered.length, 1);
+  assert.equal(registered[0].kind, 'prefix');
+  assert.equal(registered[0].path, '/kanban');
+  assert.equal(typeof registered[0].handler, 'function');
+});
