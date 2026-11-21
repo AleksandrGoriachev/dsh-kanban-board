@@ -1,0 +1,55 @@
+{
+  "task": "0003",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL client-uuid: id эпика не системный"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Идентификаторы — системный UUID, без ручного ввода",
+      "command": "node docs/tasks/0003/checks/client-uuid.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "docs/PROTOCOL.md"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Ядро, мотор и API зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
