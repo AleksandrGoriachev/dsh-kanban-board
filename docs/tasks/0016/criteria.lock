@@ -1,0 +1,59 @@
+{
+  "version": 3,
+  "task": "0016",
+  "taskFileSha256": "948b239a6059c7759ebb9724e4b30543f99c97d1f0e137821baa8a1a1ccc7cde",
+  "criteriaSha256": "9ce3628388458342e810ad9cbf3fbf6f45a58494fa096fc89abe51f3aff16709",
+  "criteriaJsonSha256": "0dabb2c10ab6f4ca65774adc978aa3129a300d538a4888b6411578a20435e7cd",
+  "attackSha256": null,
+  "contractCommit": "325f32ff1cff4855512e61837ccfd36ba58b784c",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "docs/DESIGN-PROPOSALS.md",
+      "docs/tasks/0016/**"
+    ],
+    "protectedPaths": [
+      "checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0016/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0016/checks/proposals.mjs",
+        "cwd": ".",
+        "timeoutMs": 60000,
+        "expect": {
+          "exitCode": 0
+        },
+        "covers": [
+          "docs/DESIGN-PROPOSALS.md"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass [1-9]"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-22T14:39:01.586Z",
+  "tool": "subagent-workflow/2.6.94"
+}
