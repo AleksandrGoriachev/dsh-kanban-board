@@ -1,0 +1,55 @@
+{
+  "task": "0017",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL ui-p0: нет токенов"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Правки P0/P1/P2 в клиенте; версия 0.4.0",
+      "command": "node docs/tasks/0017/checks/ui-p0.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
