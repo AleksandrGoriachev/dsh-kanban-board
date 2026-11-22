@@ -1,0 +1,55 @@
+{
+  "task": "0011",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL stage3: [subtask-plan] не принят"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Подзадачи [subtask-plan/done], [result-failed]→rework",
+      "command": "node docs/tasks/0011/checks/stage3.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "docs/PROTOCOL.md"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
