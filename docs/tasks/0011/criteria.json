@@ -22,7 +22,8 @@
       "cwd": ".",
       "covers": [
         "lib/**",
-        "docs/PROTOCOL.md"
+        "docs/PROTOCOL.md",
+        "package.json"
       ],
       "timeoutMs": 60000,
       "expect": {
