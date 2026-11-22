@@ -268,3 +268,31 @@ test('POST /api/task создаёт наряд под эпиком', async () =>
     assert.equal(boardResp.json.tasks.length, 1);
   } finally { cleanup(root); }
 });
+
+test('GET /api/card/<id> отдаёт карточку с телом и журналом; неизвестный id → 404', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const realmFile = path.join(root, 'realm.json');
+    const runtime = createKanbanRuntime({ realm: realmFile, boardDir: 'board' });
+    const handler = createWebHandler(runtime);
+    await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
+    await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', result: 'R' });
+    const task = await call(handler, 'POST', '/kanban/api/task', { confirm: true, id: 'E1-1', epic: 'E1', workspace: 'tv2', spec: 'S' });
+    assert.equal(task.status, 200);
+    const card = await call(handler, 'GET', '/kanban/api/card/E1-1');
+    assert.equal(card.status, 200);
+    assert.equal(card.json.ok, true);
+    assert.equal(card.json.card.meta.id, 'E1-1');
+    assert.equal(card.json.card.meta.spec, 'S');
+    assert.equal(typeof card.json.card.body, 'string');
+    assert.ok(Array.isArray(card.json.journal));
+    assert.equal(card.json.journal.length, 0);
+    await call(handler, 'POST', '/kanban/api/transition', { confirm: true, card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' });
+    const after = await call(handler, 'GET', '/kanban/api/card/E1-1');
+    assert.equal(after.json.journal.length, 1);
+    assert.ok(after.json.journal.every((event) => event.card === 'E1-1'));
+    const missing = await call(handler, 'GET', '/kanban/api/card/no-such-card');
+    assert.equal(missing.status, 404);
+    assert.equal(missing.json.code, 'unknown-card');
+  } finally { cleanup(root); }
+});
