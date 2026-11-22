@@ -1,0 +1,63 @@
+{
+  "version": 3,
+  "task": "0012",
+  "taskFileSha256": "7c301522f89b2b8e89a11593e870c56cc6f5d4adab5cf1058150409e67231f1a",
+  "criteriaSha256": "680c4d8a76df33510993dacbb34a72f27599b1bac6c919844f6badd3d28faa58",
+  "criteriaJsonSha256": "6bbb23222b4cd2e350024f7e5b99b9d047e5c7c781a281e025555b01ee7c396a",
+  "attackSha256": null,
+  "contractCommit": "fc711dbe5a9ed5bc065fb1624cb934fa03fdd99a",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "lib/**",
+      "test/**",
+      "docs/PROTOCOL.md",
+      "package.json",
+      "docs/tasks/0012/**"
+    ],
+    "protectedPaths": [
+      "checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0012/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0012/checks/cycle.mjs",
+        "cwd": ".",
+        "timeoutMs": 60000,
+        "expect": {
+          "exitCode": 0
+        },
+        "covers": [
+          "lib/**",
+          "package.json"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass [1-9]"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-22T10:19:50.532Z",
+  "tool": "subagent-workflow/2.6.88"
+}

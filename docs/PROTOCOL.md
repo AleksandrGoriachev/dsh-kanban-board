@@ -131,6 +131,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     accepted -> rework        мотор, по [result-failed] (или архитектор);
     in-progress -> agreed     мотор, по истечении lease_until;
     любое -> blocked          мотор, по [blocked] с причиной;
+    любое -> needs-decision   мотор, при цикле blocked_by (с детектом в обходе);
     blocked -> agreed         архитектор, после снятия блокировки;
     blocked/needs-decision -> agreed  архитектор.
 

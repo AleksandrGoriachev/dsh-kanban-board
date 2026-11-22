@@ -262,3 +262,28 @@ test('createTask сохраняет спеку работы', () => {
     assert.equal(loadCard(dir, task.id).meta.spec, spec);
   } finally { cleanup(dir); }
 });
+
+test('sweep: цикл blocked_by → оба наряда в needs-decision', () => {
+  const dir = board();
+  try {
+    const epic = createEpic(dir, { id: 'E1', title: 'эпик', result: 'R' });
+    createTask(dir, { id: 'A', epic: epic.id, title: 'A', workspace: 'tv2', blocked_by: ['B'] });
+    createTask(dir, { id: 'B', epic: epic.id, title: 'B', workspace: 'tv2', blocked_by: ['A'] });
+    const result = sweep(dir, { now: new Date() });
+    assert.equal(result.failed.length, 0);
+    assert.equal(loadCard(dir, 'A').meta.status, 'needs-decision');
+    assert.equal(loadCard(dir, 'B').meta.status, 'needs-decision');
+  } finally { cleanup(dir); }
+});
+
+test('sweep: линейный blocked_by без цикла не меняет статусы', () => {
+  const dir = board();
+  try {
+    const epic = createEpic(dir, { id: 'E1', title: 'эпик', result: 'R' });
+    createTask(dir, { id: 'A', epic: epic.id, title: 'A', workspace: 'tv2', blocked_by: ['B'] });
+    createTask(dir, { id: 'B', epic: epic.id, title: 'B', workspace: 'tv2' });
+    sweep(dir, { now: new Date() });
+    assert.equal(loadCard(dir, 'A').meta.status, 'proposed');
+    assert.equal(loadCard(dir, 'B').meta.status, 'proposed');
+  } finally { cleanup(dir); }
+});

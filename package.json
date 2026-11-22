@@ -1,6 +1,6 @@
 {
   "name": "dsh-kanban-board",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "DSH plugin: kanban board distributing tasks between realm workspaces (not sessions), per docs/PROTOCOL.md v1.0",
   "license": "MIT",
