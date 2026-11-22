@@ -1,0 +1,136 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0015",
+  "title": "Рефрейм протокола: убрать «контракт обмена»/«контракты стыка», версия 0.3.1",
+  "risk": "low",
+  "taskFileSha256": "820b2172318f5c1f9e0ef04afbe04728cae52bb0efbe34a7bb2b875cbbb5cee8",
+  "criteriaSha256": "60a10cd998b9ba2508b7a51625559a46a96fc94b71063134c73aa2157c16b4af",
+  "criteriaJsonSha256": "2b8d18ab0dfbad99df51a9655957ec7519f2c38d70d85478de976a40c894703f",
+  "contractCommit": "fd0624a69d6f93313458efb8436da91bb52d33cf",
+  "baseCommit": "fd0624a69d6f93313458efb8436da91bb52d33cf",
+  "candidateCommit": "7c692c4b716c20610ce72fdc10dcb97ebd6e8f9a",
+  "tree": "f6a7b92c0a461542fc743c65250268df275c8b6f",
+  "worktreeDigest": "66eb778289e989a98504e24fa52452b3cdcd3257b6a60ad8d1f97782717aa2bc",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "29f39d9f-4648-41ef-aaa1-4534af1f1c34",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "61a2c49bd5697db87c7817d86c065897",
+    "runKind": "accept",
+    "startedAt": "2026-11-22T12:37:16.978Z",
+    "finishedAt": "2026-11-22T12:37:25.757Z",
+    "durationMs": 8787,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "8df14cb5f18ace4cdbf31ac749f019db385e2bc37ee367c4d5191d36cb3cd37b",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "baseSha": "fd0624a69d6f93313458efb8436da91bb52d33cf",
+    "contractCommit": "fd0624a69d6f93313458efb8436da91bb52d33cf",
+    "criteriaJsonSha256": "2b8d18ab0dfbad99df51a9655957ec7519f2c38d70d85478de976a40c894703f",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0015/checks/reframe.mjs",
+      "exitCode": 0,
+      "durationMs": 296,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2473,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-22T12:37:26.264Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "Ilqog4CrOHpElNiF3jq+icdml8CTfOlS/e+jvfkPYLQ3NE2SQ5ve0rZuHyizQAQKR+md5h5/7KKvrUeeJWBDBw=="
+}
