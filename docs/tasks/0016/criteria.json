@@ -1,0 +1,54 @@
+{
+  "task": "0016",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL proposals: нет docs/DESIGN-PROPOSALS.md"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Предложения дизайнера: палитра/токены/экраны/правки, обе темы",
+      "command": "node docs/tasks/0016/checks/proposals.mjs",
+      "cwd": ".",
+      "covers": [
+        "docs/DESIGN-PROPOSALS.md"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
