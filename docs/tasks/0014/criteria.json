@@ -1,0 +1,53 @@
+{
+  "task": "0014",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [],
+    "mustPass": [
+      "C1",
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "noRed": {
+      "reason": "e2e — smoke существующего сценария §14: на базе зелёный, защищает от регрессий"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Сквозной сценарий эпик draft→done",
+      "command": "node docs/tasks/0014/checks/e2e.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
