@@ -1,0 +1,61 @@
+{
+  "version": 3,
+  "task": "0015",
+  "taskFileSha256": "820b2172318f5c1f9e0ef04afbe04728cae52bb0efbe34a7bb2b875cbbb5cee8",
+  "criteriaSha256": "60a10cd998b9ba2508b7a51625559a46a96fc94b71063134c73aa2157c16b4af",
+  "criteriaJsonSha256": "2b8d18ab0dfbad99df51a9655957ec7519f2c38d70d85478de976a40c894703f",
+  "attackSha256": null,
+  "contractCommit": "fd0624a69d6f93313458efb8436da91bb52d33cf",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "docs/PROTOCOL.md",
+      "package.json",
+      "docs/tasks/0015/**"
+    ],
+    "protectedPaths": [
+      "checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0015/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0015/checks/reframe.mjs",
+        "cwd": ".",
+        "timeoutMs": 60000,
+        "expect": {
+          "exitCode": 0
+        },
+        "covers": [
+          "docs/PROTOCOL.md",
+          "package.json"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass [1-9]"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-22T11:49:31.462Z",
+  "tool": "subagent-workflow/2.6.88"
+}
