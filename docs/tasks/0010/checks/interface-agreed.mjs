@@ -7,6 +7,7 @@ import { processLetter } from '../../../../lib/motor.js';
 import { parseLetter } from '../../../../lib/letters.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const NL = String.fromCharCode(10);
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kanban-ifag-'));
 try {
   const epic = createEpic(root, { title: 'эпик', result: 'R' });
@@ -20,8 +21,7 @@ try {
     'Date: 2026-01-01T00:00:00.000Z', 'Status: request', 'Session: s1',
     'Subject: [interface-agreed] ' + task.id, '',
     'Payload: ' + JSON.stringify({ task: task.id, spec: 'S' }), '',
-  ].join('
-'));
+  ].join(NL));
   const result = processLetter({ boardDir: root, letter, workspace: 'tv2', file: 'i1.md' });
   if (!result.ok) {
     console.error('FAIL interface-agreed: письмо не принято: ' + (result.code || result.reason));

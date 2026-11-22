@@ -123,7 +123,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
 
 Переходы наряда (кто применяет, триггер, условия):
 
-    proposed -> agreed        архитектор, после [interface-agreed] по всем стыкам наряда;
+    proposed -> agreed        мотор, по [interface-agreed] (или архитектор);
     agreed -> in-progress     мотор, по [task-accept] с валидным lease_until;
     in-progress -> integration мотор, по [stage-ready] с непустым evidence;
     integration -> accepted   архитектор, вердикт по стыку;

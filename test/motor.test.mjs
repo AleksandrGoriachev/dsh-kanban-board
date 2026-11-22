@@ -250,3 +250,19 @@ test('offerTask пишет письмо [task-offer] адресату в outbox'
     assert.equal(payload.spec, 'сделать X');
   } finally { cleanup(dir); cleanup(realmDir); }
 });
+
+test('processLetter: [interface-agreed] переводит наряд proposed → agreed, повтор не ломает', () => {
+  const dir = tmp('kanban-');
+  try {
+    const epic = createEpic(dir, { id: 'E1', title: 'эпик', result: 'R' });
+    const task = createTask(dir, { id: 'E1-1', epic: epic.id, title: 'наряд', workspace: 'console', spec: 'S' });
+    const letter = letterFor('interface-agreed', 'Payload: ' + JSON.stringify({ task: task.id, spec: 'S' }) + '\n');
+    const first = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l9.md' });
+    assert.equal(first.ok, true);
+    assert.equal(first.marker, '[transition-applied]');
+    assert.equal(loadCard(dir, task.id).meta.status, 'agreed');
+    const dup = processLetter({ boardDir: dir, letter, workspace: 'console', file: 'l9.md' });
+    assert.equal(dup.code, 'duplicate');
+    assert.equal(loadCard(dir, task.id).meta.status, 'agreed');
+  } finally { cleanup(dir); }
+});
