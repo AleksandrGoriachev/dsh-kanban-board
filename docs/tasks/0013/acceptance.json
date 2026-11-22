@@ -1,0 +1,136 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0013",
+  "title": "Этап 4: панель деталей карточки, журнал по карточке, drag&drop; версия 0.3.0",
+  "risk": "medium",
+  "taskFileSha256": "86a9702fbd401e1b0aa3bbe96799082fb35dfb527f0bfb129dddcaa62b70a878",
+  "criteriaSha256": "960b2ec520c50eb708fa605cb240953f31accc41fd6cc2423dd1434ef2b2ce91",
+  "criteriaJsonSha256": "899b9e403100f54d6eafe26dce94d7ee5e7165018cb6eeacbd811fa5420687f0",
+  "contractCommit": "f2b219d0c816eca4d2e7cd703193de9dbfdb49f7",
+  "baseCommit": "f2b219d0c816eca4d2e7cd703193de9dbfdb49f7",
+  "candidateCommit": "a1e7b4176845c04b5f87fcde33dacb9a06a8a608",
+  "tree": "390956e84f5a03c0b3e46046a08f06628e7dcb25",
+  "worktreeDigest": "78e336303e09ce1ad04e41fc7dc53b2c952dce2741e5cf7a8ff63ebe1f9e52c0",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "d47fde03-8e37-46bc-8843-8806a1c317a6",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "aa824767fe376dc06aea40986f2513fb",
+    "runKind": "accept",
+    "startedAt": "2026-11-22T11:01:01.390Z",
+    "finishedAt": "2026-11-22T11:01:14.091Z",
+    "durationMs": 12707,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "c96a57b5468d0d3326c3a801a8d0e971ba2e80dcac9175181d4243fd70f0baf9",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "baseSha": "f2b219d0c816eca4d2e7cd703193de9dbfdb49f7",
+    "contractCommit": "f2b219d0c816eca4d2e7cd703193de9dbfdb49f7",
+    "criteriaJsonSha256": "899b9e403100f54d6eafe26dce94d7ee5e7165018cb6eeacbd811fa5420687f0",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0013/checks/ui-details.mjs",
+      "exitCode": 0,
+      "durationMs": 698,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2825,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-22T11:01:14.728Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "0M3irlk8nKWI4NRC6qiDDXE0QV2OLvKnZxaSkd13S1iyuiUMsgd3UG1jdZ0+mEq7LR6H/N1XZlMJzIa6LQsXAw=="
+}
