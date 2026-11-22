@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Канбан — макеты</title>
+<style>
+:root{--hairline:color-mix(in srgb,currentColor 16%,transparent);--hairlineSoft:color-mix(in srgb,currentColor 10%,transparent);--hairlineStrong:color-mix(in srgb,currentColor 32%,transparent);--s1:color-mix(in srgb,currentColor 3%,transparent);--s2:color-mix(in srgb,currentColor 7%,transparent);--s3:color-mix(in srgb,currentColor 10%,transparent);--s4:color-mix(in srgb,currentColor 12%,transparent);--ring:0 0 0 1px color-mix(in srgb,currentColor 26%,transparent);--ringSel:0 0 0 2px color-mix(in srgb,currentColor 40%,transparent);--tDim:.66;--tMuted:.72;--tSoft:.82;--body:.88}
+body{margin:0;font:12px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
+[data-theme=light]{--bg:#ffffff;--fg:#1b1d21}
+[data-theme=dark]{--bg:#17181c;--fg:#e6e8eb}
+.wrap{padding:14px 16px;border-bottom:1px solid var(--hairline)}
+.themes{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.theme{flex:1;min-width:520px}
+.theme h2{font:600 12px/1.3 inherit;letter-spacing:.08em;text-transform:uppercase;opacity:var(--tDim);margin:0 0 8px}
+.board{display:flex;gap:8px;overflow:auto;scroll-snap-type:x proximity;padding-bottom:4px}
+.col{flex:0 0 208px;width:208px;scroll-snap-align:start;border:1px solid var(--hairline);border-radius:10px;background:var(--s1);display:flex;flex-direction:column;min-height:210px}
+.colh{display:flex;align-items:center;gap:6px;padding:7px 8px 6px;border-bottom:1px solid var(--hairlineSoft)}
+.dot{width:7px;height:7px;border-radius:50%;box-shadow:var(--ring)}
+.nm{font:600 10.5px/1.3 inherit;letter-spacing:.06em;text-transform:uppercase;opacity:var(--tDim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cnt{font:400 10px/1 inherit;opacity:var(--tDim);font-variant-numeric:tabular-nums}
+.colb{padding:6px;display:flex;flex-direction:column;gap:6px}
+.card{background:var(--s2);border:1px solid var(--hairline);border-left:3px solid var(--accent,#94a3b8);border-radius:8px;padding:6px 7px;display:flex;flex-direction:column;gap:4px}
+.card.sel{background:var(--s4);box-shadow:var(--ringSel)}
+.top{display:flex;align-items:center;gap:5px}
+.uid{font:400 10px/1.3 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.01em;opacity:var(--tDim)}
+.badge{font:500 10px/1.2 inherit;opacity:var(--tSoft);background:var(--s3);border-radius:5px;padding:1px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px}
+.owner{font:500 10px/1.2 inherit;opacity:var(--tSoft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttl{font:500 12px/1.35 inherit;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font:400 10.5px/1.35 inherit;opacity:var(--tMuted);display:flex;flex-direction:column;gap:1px}
+.meta span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acts{display:flex;gap:4px;flex-wrap:wrap;margin-top:1px}
+.act{font:500 11px/1 inherit;border:1px solid var(--hairlineStrong);border-radius:6px;background:transparent;color:inherit;padding:4px 7px;opacity:var(--tSoft);cursor:pointer}
+.act:hover{background:var(--s3)}
+.empty{opacity:var(--tDim);font-size:11px;text-align:center;padding:14px 6px}
+.hd{display:flex;align-items:center;gap:6px;margin:0 0 8px}
+.ht{font:600 12.5px/1.3 inherit;letter-spacing:.01em;flex:1}
+.btn{font:500 11px/1 inherit;border:1px solid var(--hairlineStrong);border-radius:7px;background:transparent;color:inherit;padding:5px 8px;cursor:pointer}
+.btn:hover{background:var(--s3)}
+.btn.pri{background:var(--s4);border-color:var(--hairlineStrong)}
+.det{width:320px;border-left:1px solid var(--hairline);display:flex;flex-direction:column;gap:8px;padding:8px 10px;background:var(--bg)}
+.det h3{margin:0;font:600 12.5px/1.35 inherit;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dt{display:flex;align-items:center;gap:6px}
+.x{border:0;background:transparent;color:inherit;opacity:var(--tDim);cursor:pointer;font-size:13px;padding:2px 4px}
+.kv{display:grid;grid-template-columns:74px 1fr;gap:3px 8px;background:var(--s1);border:1px solid var(--hairlineSoft);border-radius:8px;padding:7px 8px;font-size:10.5px}
+.kv b{opacity:var(--tMuted);font-weight:500;white-space:nowrap}
+.kv span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.body{white-space:pre-wrap;font:400 11.5px/1.55 inherit;opacity:var(--body);margin:0}
+.jrn{display:flex;flex-direction:column;gap:5px;font-size:10.5px}
+.jev{display:flex;gap:6px;align-items:baseline;opacity:var(--tMuted)}
+.jtime{font:400 10px/1.3 ui-monospace,Menlo,Consolas,monospace;opacity:var(--tDim);white-space:nowrap}
+.jarrow{opacity:var(--tDim)}
+.form{border:1px solid var(--hairline);border-radius:10px;background:var(--s1);padding:10px;display:flex;flex-direction:column;gap:8px;max-width:360px}
+.ft{font:600 12px/1.3 inherit}
+.fld{display:flex;flex-direction:column;gap:3px}
+.lbl{font:600 10px/1.3 inherit;letter-spacing:.06em;text-transform:uppercase;opacity:var(--tDim)}
+.inp,.ta{font:inherit;color:inherit;background:transparent;border:1px solid var(--hairline);border-radius:7px;padding:5px 7px;outline:none}
+.ta{min-height:72px;max-height:200px;resize:vertical}
+.inp:focus,.ta:focus{border-color:var(--hairlineStrong)}
+.ferr{font:400 10.5px/1.35 inherit;opacity:var(--tSoft);border-left:3px solid #ef4444;background:color-mix(in srgb,#ef4444 12%,transparent);padding:4px 7px;border-radius:0 6px 6px 0}
+.banner{border:1px solid var(--hairline);border-left:3px solid #f59e0b;background:color-mix(in srgb,#f59e0b 12%,transparent);padding:5px 8px;border-radius:0 7px 7px 0;font-size:11px;opacity:var(--tSoft);margin-bottom:8px}
+.sectitle{display:flex;align-items:center;gap:6px;font:600 10.5px/1.3 inherit;letter-spacing:.08em;text-transform:uppercase;opacity:var(--tDim);margin:10px 0 6px}
+.note{font-size:10px;opacity:var(--tDim);margin-top:6px}
+</style></head><body>
+
+<div class="wrap"><div class="themes">
+
+<div class="theme" data-theme="light" style="--bg:#ffffff;--fg:#1b1d21;background:#ffffff;color:#1b1d21;padding:12px;border:1px solid #dbdbdb;border-radius:12px">
+<h2>Светлая тема</h2>
+
+<div class="hd"><div class="ht">Канбан</div><button class="btn">↻</button><button class="btn">Обход обмена</button><button class="btn">+ Эпик</button><button class="btn">+ Наряд</button><button class="btn">Реалм</button></div>
+<div class="banner">Обход применён: 2 перехода, 1 ответ</div>
+
+<div class="sectitle">Эпики <span class="cnt">2</span></div>
+<div class="board">
+<div class="col"><div class="colh"><span class="dot" style="background:#94a3b8"></span><span class="nm">Черновик</span><span class="cnt">1</span></div><div class="colb">
+<div class="card" style="--accent:#94a3b8"><div class="top"><span class="uid">#f9fb35b0</span><span class="badge">realm</span><span class="owner">координатор</span></div><div class="ttl">Эпик: перевести доску на новые токены</div><div class="meta"><span>Результат: 3 спеки + приёмка</span><span>согласны 0/2</span></div><div class="acts"><button class="act">→ Согласование</button></div></div>
+</div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#f59e0b"></span><span class="nm">Согласование</span><span class="cnt">1</span></div><div class="colb">
+<div class="card" style="--accent:#f59e0b"><div class="top"><span class="uid">#a1b2c3d4</span><span class="badge">realm</span><span class="owner">координатор</span></div><div class="ttl">Эпик: контракт обмена v2</div><div class="meta"><span>Результат: спека стыка</span><span>согласны 1/2</span></div><div class="acts"><button class="act">→ Согласован</button><button class="act">→ Нужно решение</button></div></div>
+</div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#06b6d4"></span><span class="nm">Согласован</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#8b5cf6"></span><span class="nm">Разложен</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#3b82f6"></span><span class="nm">В работе</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#22c55e"></span><span class="nm">Принят</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#15803d"></span><span class="nm">Закрыт</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+</div>
+
+<div class="sectitle">Наряды <span class="cnt">3</span></div>
+<div class="board">
+<div class="col"><div class="colh"><span class="dot" style="background:#94a3b8"></span><span class="nm">Предложен</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#f59e0b"></span><span class="nm">Стык</span><span class="cnt">1</span></div><div class="colb">
+<div class="card sel" style="--accent:#f59e0b"><div class="top"><span class="uid">#e5f6a7b8</span><span class="badge">tv2</span><span class="owner">свободен</span></div><div class="ttl">Наряд: токены и контраст в клиенте</div><div class="meta"><span>ждёт → эпик</span><span>доказательств 2 · подзадачи 1/3</span></div><div class="acts"><button class="act">→ Интеграция</button><button class="act">→ Блокирован</button></div></div>
+</div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#06b6d4"></span><span class="nm">Согласован</span><span class="cnt">1</span></div><div class="colb">
+<div class="card" style="--accent:#06b6d4"><div class="top"><span class="uid">#c9d0e1f2</span><span class="badge">tv2</span><span class="owner">agent-4</span></div><div class="ttl">Наряд: панель деталей и журнал</div><div class="meta"><span>роль: исполнитель · подзадачи 0/2</span></div><div class="acts"><button class="act">→ В работу</button></div></div>
+</div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#3b82f6"></span><span class="nm">В работе</span><span class="cnt">1</span></div><div class="colb">
+<div class="card" style="--accent:#3b82f6"><div class="top"><span class="uid">#11223344</span><span class="badge">tv2</span><span class="owner">agent-4</span></div><div class="ttl">Наряд: формы эпика и наряда</div><div class="meta"><span>лиз до 20:00 · доказательств 5</span></div><div class="acts"><button class="act">→ Интеграция</button></div></div>
+</div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#f59e0b"></span><span class="nm">Интеграция</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#22c55e"></span><span class="nm">Принят</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+</div>
+
+<div class="hd" style="margin-top:12px"><div class="ht">Детали</div></div>
+<div class="det" style="width:320px;border:1px solid var(--hairline);border-radius:10px;height:auto">
+<div class="dt"><h3>Наряд: токены и контраст в клиенте</h3><button class="x">✕</button></div>
+<div class="kv"><b>Статус</b><span>Стык</span><b>Воркспейс</b><span>tv2</span><b>Владелец</b><span>свободен</span><b>Лиз</b><span>—</span><b>Доказательства</b><span>2</span><b>Подзадачи</b><span>1/3</span></div>
+<p class="body">Спека: заменить HAIRLINE 12→16 %, добавить SURFACE_1..4, поднять текст до 0.66/0.72/0.82, колонка 208, детали 320/100 %.</p>
+<div class="sectitle">Журнал</div>
+<div class="jrn">
+<div class="jev"><span class="jtime">2026-11-22 18:04</span><span>Предложен</span><span class="jarrow">→</span><span>Стык</span><span class="opacity:.66">motor</span></div>
+<div class="jev"><span class="jtime">2026-11-22 18:12</span><span>Стык</span><span class="jarrow">→</span><span>Стык</span><span>[subtask-done] 1/3</span></div>
+</div>
+</div>
+</div>
+
+<div class="theme" data-theme="dark" style="--bg:#17181c;--fg:#e6e8eb;background:#17181c;color:#e6e8eb;padding:12px;border:1px solid #38393d;border-radius:12px">
+<h2>Тёмная тема</h2>
+<div class="hd"><div class="ht">Канбан</div><button class="btn">↻</button><button class="btn">Обход обмена</button><button class="btn">+ Эпик</button><button class="btn">+ Наряд</button><button class="btn">Реалм</button></div>
+<div class="banner">Обход применён: 2 перехода, 1 ответ</div>
+<div class="sectitle">Эпики <span class="cnt">2</span></div>
+<div class="board">
+<div class="col"><div class="colh"><span class="dot" style="background:#94a3b8"></span><span class="nm">Черновик</span><span class="cnt">1</span></div><div class="colb"><div class="card" style="--accent:#94a3b8"><div class="top"><span class="uid">#f9fb35b0</span><span class="badge">realm</span><span class="owner">координатор</span></div><div class="ttl">Эпик: перевести доску на новые токены</div><div class="meta"><span>Результат: 3 спеки + приёмка</span><span>согласны 0/2</span></div><div class="acts"><button class="act">→ Согласование</button></div></div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#f59e0b"></span><span class="nm">Согласование</span><span class="cnt">1</span></div><div class="colb"><div class="card" style="--accent:#f59e0b"><div class="top"><span class="uid">#a1b2c3d4</span><span class="badge">realm</span><span class="owner">координатор</span></div><div class="ttl">Эпик: контракт обмена v2</div><div class="meta"><span>Результат: спека стыка</span><span>согласны 1/2</span></div><div class="acts"><button class="act">→ Согласован</button></div></div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#06b6d4"></span><span class="nm">Согласован</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#3b82f6"></span><span class="nm">В работе</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#22c55e"></span><span class="nm">Принят</span><span class="cnt">0</span></div><div class="colb"><div class="empty">—</div></div></div>
+</div>
+<div class="sectitle">Наряды <span class="cnt">3</span></div>
+<div class="board">
+<div class="col"><div class="colh"><span class="dot" style="background:#f59e0b"></span><span class="nm">Стык</span><span class="cnt">1</span></div><div class="colb"><div class="card sel" style="--accent:#f59e0b"><div class="top"><span class="uid">#e5f6a7b8</span><span class="badge">tv2</span><span class="owner">свободен</span></div><div class="ttl">Наряд: токены и контраст в клиенте</div><div class="meta"><span>ждёт → эпик</span><span>доказательств 2 · подзадачи 1/3</span></div><div class="acts"><button class="act">→ Интеграция</button></div></div></div></div>
+<div class="col"><div class="colh"><span class="dot" style="background:#3b82f6"></span><span class="nm">В работе</span><span class="cnt">1</span></div><div class="colb"><div class="card" style="--accent:#3b82f6"><div class="top"><span class="uid">#11223344</span><span class="badge">tv2</span><span class="owner">agent-4</span></div><div class="ttl">Наряд: формы эпика и наряда</div><div class="meta"><span>лиз до 20:00 · доказательств 5</span></div><div class="acts"><button class="act">→ Интеграция</button></div></div></div></div>
+</div>
+<div class="hd" style="margin-top:12px"><div class="ht">Детали</div></div>
+<div class="det" style="width:320px;border:1px solid var(--hairline);border-radius:10px;height:auto">
+<div class="dt"><h3>Наряд: токены и контраст в клиенте</h3><button class="x">✕</button></div>
+<div class="kv"><b>Статус</b><span>Стык</span><b>Воркспейс</b><span>tv2</span><b>Владелец</b><span>свободен</span><b>Доказательства</b><span>2</span><b>Подзадачи</b><span>1/3</span></div>
+<p class="body">Спека: HAIRLINE 16 %, SURFACE_1..4, текст 0.66/0.72/0.82, колонка 208, детали 320/100 %.</p>
+<div class="sectitle">Журнал</div>
+<div class="jrn"><div class="jev"><span class="jtime">2026-11-22 18:04</span><span>Предложен</span><span class="jarrow">→</span><span>Стык</span><span>motor</span></div></div>
+</div>
+</div>
+
+</div></div>
+
+<div class="wrap"><div class="themes">
+<div class="theme" data-theme="light" style="--bg:#ffffff;--fg:#1b1d21;background:#ffffff;color:#1b1d21;padding:12px;border:1px solid #dbdbdb;border-radius:12px">
+<h2>Формы (светлая)</h2>
+<div class="form"><div class="ft">Новый эпик</div>
+<div class="fld"><label class="lbl" for="t1">Название</label><input class="inp" id="t1" value="Эпик: перевести доску на новые токены"></div>
+<div class="fld"><label class="lbl" for="t2">Результат</label><textarea class="ta" id="t2">Три спеки для воркспейсов + критерии приёмки стыков.</textarea></div>
+<div class="fld"><label class="lbl">Участники</label><div style="display:flex;gap:10px;font-size:11px"><label><input type="checkbox" checked> tv2</label><label><input type="checkbox"> tv3</label></div></div>
+<button class="btn pri">Создать эпик</button>
+<div class="ferr">Название не может быть пустым</div>
+</div>
+<div class="form" style="margin-top:10px"><div class="ft">Новый наряд</div>
+<div class="fld"><label class="lbl" for="t3">Эпик</label><select class="inp" id="t3"><option>Эпик: перевести доску на новые токены</option></select></div>
+<div class="fld"><label class="lbl" for="t4">Воркспейс</label><select class="inp" id="t4"><option>tv2</option></select></div>
+<div class="fld"><label class="lbl" for="t5">Спека работы</label><textarea class="ta" id="t5">Заменить HAIRLINE 12→16 %, добавить SURFACE_1..4…</textarea></div>
+<button class="btn pri">Создать наряд</button>
+</div>
+</div>
+<div class="theme" data-theme="dark" style="--bg:#17181c;--fg:#e6e8eb;background:#17181c;color:#e6e8eb;padding:12px;border:1px solid #38393d;border-radius:12px">
+<h2>Формы (тёмная)</h2>
+<div class="form"><div class="ft">Новый эпик</div>
+<div class="fld"><label class="lbl" for="d1">Название</label><input class="inp" id="d1" value="Эпик: перевести доску на новые токены"></div>
+<div class="fld"><label class="lbl" for="d2">Результат</label><textarea class="ta" id="d2">Три спеки для воркспейсов + критерии приёмки стыков.</textarea></div>
+<div class="fld"><label class="lbl">Участники</label><div style="display:flex;gap:10px;font-size:11px"><label><input type="checkbox" checked> tv2</label><label><input type="checkbox"> tv3</label></div></div>
+<button class="btn pri">Создать эпик</button>
+<div class="ferr">Название не может быть пустым</div>
+</div>
+</div>
+</div></div>
+
+</body></html>
