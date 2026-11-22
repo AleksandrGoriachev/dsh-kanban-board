@@ -3,9 +3,9 @@
   "task": "0011",
   "taskFileSha256": "0252a688f1aeb2393583b4cc4f86a83a8b452740faa7cffb6f82f002bd0e9651",
   "criteriaSha256": "c87336c6d0fdbcb7b04c9df80976421965f7d3415a6c8627048554352bc1141b",
-  "criteriaJsonSha256": "41ed5c3d08e46323125e6d61c0b625555714d0e9c68067e03d26362193dc4a50",
+  "criteriaJsonSha256": "fb044b82684b1fe5044b7cc191fe769d442b22b2a34eadb983b9c81fda02067e",
   "attackSha256": null,
-  "contractCommit": "da22e95aed7a8d37be0ae580f5128cf7d3d7159f",
+  "contractCommit": "1042232e811e68c9d9a8c8929616e9b0630eee79",
   "protected": [],
   "contract": {
     "allowedPaths": [
@@ -32,7 +32,8 @@
         },
         "covers": [
           "docs/PROTOCOL.md",
-          "lib/**"
+          "lib/**",
+          "package.json"
         ],
         "tags": [
           "fast"
@@ -58,6 +59,6 @@
       }
     ]
   },
-  "createdAt": "2026-11-22T09:56:36.269Z",
+  "createdAt": "2026-11-22T09:57:24.527Z",
   "tool": "subagent-workflow/2.6.88"
 }

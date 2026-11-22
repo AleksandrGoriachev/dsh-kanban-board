@@ -266,3 +266,44 @@ test('processLetter: [interface-agreed] переводит наряд proposed �
     assert.equal(loadCard(dir, task.id).meta.status, 'agreed');
   } finally { cleanup(dir); }
 });
+
+test('processLetter: [subtask-plan] ставит total и done=0', () => {
+  const dir = tmp('kanban-');
+  try {
+    inProgressTask(dir);
+    const letter = letterFor('subtask-plan', 'Payload: ' + JSON.stringify({ task: 'E1-1', total: 3, subtasks: ['a', 'b', 'c'] }) + '\n');
+    const r = processLetter({ boardDir: dir, letter, workspace: 'console', file: 's1.md' });
+    assert.equal(r.ok, true);
+    assert.equal(r.code, 'subtasks-planned');
+    const card = loadCard(dir, 'E1-1');
+    assert.deepEqual(card.meta.subtasks, { total: 3, done: 0 });
+  } finally { cleanup(dir); }
+});
+
+test('processLetter: [subtask-done] увеличивает done', () => {
+  const dir = tmp('kanban-');
+  try {
+    inProgressTask(dir);
+    const plan = letterFor('subtask-plan', 'Payload: ' + JSON.stringify({ task: 'E1-1', total: 3, subtasks: ['a', 'b', 'c'] }) + '\n');
+    assert.equal(processLetter({ boardDir: dir, letter: plan, workspace: 'console', file: 's2.md' }).ok, true);
+    const first = letterFor('subtask-done', 'Payload: ' + JSON.stringify({ task: 'E1-1', subtask: 'a' }) + '\n');
+    assert.equal(processLetter({ boardDir: dir, letter: first, workspace: 'console', file: 's3.md' }).ok, true);
+    assert.deepEqual(loadCard(dir, 'E1-1').meta.subtasks, { done: 1, total: 3 });
+    const second = letterFor('subtask-done', 'Payload: ' + JSON.stringify({ task: 'E1-1', subtask: 'b' }) + '\n');
+    assert.equal(processLetter({ boardDir: dir, letter: second, workspace: 'console', file: 's4.md' }).ok, true);
+    assert.deepEqual(loadCard(dir, 'E1-1').meta.subtasks, { done: 2, total: 3 });
+  } finally { cleanup(dir); }
+});
+
+test('processLetter: [result-failed] переводит accepted → rework', () => {
+  const dir = tmp('kanban-');
+  try {
+    inProgressTask(dir);
+    assert.equal(apply(dir, { card: 'E1-1', from: 'in-progress', to: 'integration', by: 'motor', payload: { evidence: ['e1'] } }).ok, true);
+    assert.equal(apply(dir, { card: 'E1-1', from: 'integration', to: 'accepted', by: 'architect' }).ok, true);
+    const letter = letterFor('result-failed', 'Payload: ' + JSON.stringify({ task: 'E1-1', reason: 'не тот результат' }) + '\n');
+    const r = processLetter({ boardDir: dir, letter, workspace: 'console', file: 's5.md' });
+    assert.equal(r.ok, true);
+    assert.equal(loadCard(dir, 'E1-1').meta.status, 'rework');
+  } finally { cleanup(dir); }
+});

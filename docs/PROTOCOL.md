@@ -128,7 +128,7 @@ workflow в каждом воркспейсе (docs/tasks, гейты, приё�
     in-progress -> integration мотор, по [stage-ready] с непустым evidence;
     integration -> accepted   архитектор, вердикт по стыку;
     integration -> rework     архитектор, отказ стыка;
-    accepted -> rework        архитектор, по [result-failed];
+    accepted -> rework        мотор, по [result-failed] (или архитектор);
     in-progress -> agreed     мотор, по истечении lease_until;
     любое -> blocked          мотор, по [blocked] с причиной;
     blocked -> agreed         архитектор, после снятия блокировки;
@@ -152,6 +152,7 @@ Session обязателен в любом письме: сторону опре
     [interface-agreed]— подтверждение спеки наряда; payload: наряд, спека;
     [task-accept]     — взятие наряда; payload: наряд, lease_until;
     [stage-ready]     — результат стадии; payload: наряд, evidence[];
+    [result-failed]   — провал результата; payload: наряд, причина;
     [blocked]         — блокировка; payload: наряд, причина, blocked_by[];
     [needs-decision]  — запрос вердикта; payload: наряд, вопрос;
     [subtask-plan]    — план подзадач; payload: наряд, total, список подзадач;
