@@ -1,0 +1,55 @@
+{
+  "task": "0018",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL status-version: /api/status не отдаёт version"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "/api/status отдаёт version; версия 0.4.1",
+      "command": "node docs/tasks/0018/checks/status-version.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
