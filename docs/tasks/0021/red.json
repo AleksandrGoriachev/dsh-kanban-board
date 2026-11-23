@@ -1,0 +1,85 @@
+{
+  "version": 5,
+  "kind": "red",
+  "tool": "subagent-workflow/2.6.103",
+  "task": "0021",
+  "createdAt": "2026-11-23T18:48:24.445Z",
+  "base": "HEAD",
+  "baseSha": "98e1f3c7eb92bd4cd96cad27fa3a81a978fe946e",
+  "headSha": "98e1f3c7eb92bd4cd96cad27fa3a81a978fe946e",
+  "contractCommit": "98e1f3c7eb92bd4cd96cad27fa3a81a978fe946e",
+  "criteriaSha256": "494e711800cc0aacdd6d15a60576901e486716242b753c666ca9f00995c1e707",
+  "criteriaJsonSha256": "e4e3d593cea59fd88011b7dd70e00643e374ecc6320559b8f1dbf28a63234a57",
+  "dirtyPaths": [
+    "docs/tasks/0021/criteria.lock"
+  ],
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0021/checks/realm-form.mjs",
+      "exitCode": 1,
+      "durationMs": 393,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "31052ab2a165df9281b5aae47c83a1e3328a8b79b7f4cf7b4ef142b9366758c3",
+      "stdoutPreview": "",
+      "stderrPreview": "FAIL realm-form: RealmForm не получает props.realm — галочки не предзаполняются; корень архитектора = workspaces[0].path, а не текущий воркспейс; RealmForm не использует useWorkspaces для текущего воркспейса; после сохранения нет заметки «Реалм сохранён»; ожидалась версия 0.4.3, сейчас 0.4.2\n"
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 3250,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "4ecd40b1dd3539bb6f242548f3652f49c0d9d49e560bc05b2e2aa57e42721aa0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ GET /kanban/api/board отдаёт эпики, наряды и журнал (114.9827ms)\n✔ GET /kanban/api/status: реалм и зависимость установлена (35.0651ms)\n✔ POST /kanban/api/sweep без confirm → 400 (33.4907ms)\n✔ POST /kanban/api/deps/install вызывает installBundle (33.1984ms)\n✔ не-loopback запрос → 403 (31.1598ms)\n✔ путь вне /kanban → 404 (27.4291ms)\n✔ ensureDependencies ставит недостающую зависимость (27.8078ms)\n✔ GET /kanban/api/workspaces отдаёт зарегистрированные воркспейсы (8.114ms)\n✔ GET /kanban/api/realm до настройки → configured false (7.3351ms)\n✔ POST /kanban/api/realm сохраняет реалм из меню и включает доску (40.9966ms)\n✔ apply регистрирует /kanban на webServer (35.5881ms)\n✔ POST /api/epic создаёт эпик, /api/board отдаёт допустимые переходы (102.8625ms)\n✔ POST /api/transition двигает эпик draft → agreeing и отклоняет недопустимый (178.8801ms)\n✔ POST /api/task создаёт наряд под эпиком (155.6376ms)\n✔ GET /api/card/<id> отдаёт карточку с телом и журналом; неизвестный id → 404 (213.106ms)\n✔ карточка: parse ↔ render сохраняет мета и тело (2.7927ms)\n✔ эпик: draft → agreeing разрешён архитектору (102.6268ms)\n✔ эпик: draft → done запрещён, список допустимых назван (51.7316ms)\n✔ несуществующая карточка → [unknown-card] (12.4928ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (130.2455ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (88.5955ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (208.6311ms)\n✔ повтор письма → [duplicate], состояние не меняется (119.9561ms)\n✔ stale revision отклоняется (81.9507ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (184.2008ms)\n✔ sweep: истёкший agree_until → needs-decision (109.6081ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (127.1506ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (90.5702ms)\n✔ создание карточек без явного id — системный UUID (50.8804ms)\n✔ createEpic требует название, createTask — эпик (6.5419ms)\n✔ createEpic сохраняет Результат эпика (107.0466ms)\n✔ createTask сохраняет спеку работы (49.8614ms)\n✔ sweep: цикл blocked_by → оба наряда в needs-decision (122.7173ms)\n✔ sweep: линейный blocked_by без цикла не меняет статусы (56.5861ms)\n✔ маркер и payload читаются из Subject и тела (3.0956ms)\n✔ renderLetter: шапка идёт в фиксированном порядке, тело отделено пустой строкой (0.9975ms)\n✔ processLetter: [task-accept] переводит agreed → in-progress (155.3562ms)\n✔ processLetter: [stage-ready] без evidence → [transition-rejected] (131.8735ms)\n✔ processLetter: [stage-ready] с evidence → integration (203.7166ms)\n✔ processLetter: [blocked] → blocked (151.0156ms)\n✔ processLetter: неизвестный маркер не применяется (70.2124ms)\n✔ sweepOutboxes: читает новое письмо, пишет ответ, повторно не берёт (220.2351ms)\n✔ sweepOutboxes: письмо без Session не обрабатывается (110.251ms)\n✔ processLetter: [agree-epic] вне agreeing отклоняется (40.1872ms)\n✔ processLetter: [agree-epic] частичное согласие фиксируется (83.7148ms)\n✔ processLetter: повтор [agree-epic] → duplicate (86.8847ms)\n✔ processLetter: все involved согласны → эпик agreed (168.7231ms)\n✔ processLetter: [agree-epic] без версий принимается (105.0552ms)\n✔ offerTask пишет письмо [task-offer] адресату в outbox (65.1147ms)\n✔ processLetter: [interface-agreed] переводит наряд proposed → agreed, повтор не ломает (74.0072ms)\n✔ processLetter: [subtask-plan] ставит total и done=0 (72.5745ms)\n✔ processLetter: [subtask-done] увеличивает done (95.3612ms)\n✔ processLetter: [result-failed] переводит accepted → rework (101.5346ms)\nℹ tests 53\nℹ suites 0\nℹ pass 53\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 2525.11\n",
+      "stderrPreview": ""
+    }
+  ],
+  "executed": 2,
+  "failed": 1,
+  "failedIds": [
+    "C1"
+  ],
+  "allGreen": false,
+  "redProven": true,
+  "redKind": "proven",
+  "noRed": null,
+  "redExpectation": {
+    "configured": true,
+    "ok": true,
+    "errors": [],
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "noRed": null,
+    "checkDefects": [],
+    "reasonChecks": [
+      {
+        "id": "C1",
+        "ok": true,
+        "distance": 0,
+        "total": 1,
+        "window": 25
+      }
+    ],
+    "reasonWindow": 25
+  },
+  "bypasses": {
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "log": "red.log"
+}
