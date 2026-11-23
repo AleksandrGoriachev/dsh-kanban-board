@@ -1,18 +1,19 @@
 {
   "version": 3,
   "task": "0020",
-  "taskFileSha256": "a382083746b65e407b2c71083911cde792880105728566cd26c0a83ec262b456",
+  "taskFileSha256": "74ce1482db9b48fe2d1696d805cb781b591f486eacde026fddf3501ffd8dacf2",
   "criteriaSha256": "afd12e90aa48bfdf379f5678c33f5a1bfaf9ca7d6152c6ecfcb46d4d484370c7",
   "criteriaJsonSha256": "3c4b7714d1f8a231bfb12173c581e4be716197483a6c383058f08e6486c78bf5",
   "attackSha256": null,
-  "contractCommit": "54f6b7b14f2d32fb0bc95fa857f39fbfcb5bf082",
+  "contractCommit": "5f3f6347b113fd3608afbed0aee11c5a6dea8fe6",
   "protected": [],
   "contract": {
     "allowedPaths": [
       "lib/**",
       "test/**",
       "package.json",
-      "docs/tasks/0020/**"
+      "docs/tasks/0020/task.md",
+      "docs/tasks/0020/criteria.json"
     ],
     "protectedPaths": [
       "docs/tasks/0020/checks/**"
@@ -57,6 +58,6 @@
       }
     ]
   },
-  "createdAt": "2026-11-23T11:00:40.378Z",
+  "createdAt": "2026-11-23T11:01:20.337Z",
   "tool": "subagent-workflow/2.6.94"
 }
