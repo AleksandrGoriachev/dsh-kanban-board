@@ -23,7 +23,7 @@
     "docs/tasks/0019/**"
   ],
   "protectedPaths": [
-    "checks/**"
+    "docs/tasks/0019/checks/**"
   ],
   "redAllowDirty": [
     "docs/tasks/0019/**"

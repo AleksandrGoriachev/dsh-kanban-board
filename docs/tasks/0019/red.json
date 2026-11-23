@@ -1,0 +1,81 @@
+{
+  "version": 5,
+  "kind": "red",
+  "task": "0019",
+  "createdAt": "2026-11-23T10:25:13.741Z",
+  "base": "HEAD",
+  "baseSha": "10ae32ff8a834e1b28dc2d3aac336fa3cd3d110e",
+  "headSha": "10ae32ff8a834e1b28dc2d3aac336fa3cd3d110e",
+  "contractCommit": "10ae32ff8a834e1b28dc2d3aac336fa3cd3d110e",
+  "criteriaSha256": "61b0efd6e7be50174f6bed8a11a4434bf9a26176b3f8f775867a5775678b330a",
+  "criteriaJsonSha256": "9a04145f07d44f6f6cc73862b6715f1b43a423cd93d93342d7c323c70fd634c6",
+  "dirtyPaths": [
+    "docs/tasks/0019/criteria.lock"
+  ],
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0019/checks/realm-save.mjs",
+      "exitCode": 1,
+      "durationMs": 412,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "71ef69ed89ee6ad5893cd889300365455687859b5f8454f92a9deb336d702f03",
+      "stdoutPreview": "",
+      "stderrPreview": "FAIL realm-save: клиент: RealmForm.save не сбрасывает setSaving(false) в finally — кнопка зависает на «Сохраняю…»; клиент: RealmForm.save не ставит setSaving(true)\n"
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2591,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "bd7f85e16bec5860abe7b253266eaf3f92755a21e6406cf7b04d0ffbb532fefc",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ GET /kanban/api/board отдаёт эпики, наряды и журнал (55.855ms)\n✔ GET /kanban/api/status: реалм и зависимость установлена (12.9828ms)\n✔ POST /kanban/api/sweep без confirm → 400 (27.6016ms)\n✔ POST /kanban/api/deps/install вызывает installBundle (20.5387ms)\n✔ не-loopback запрос → 403 (10.1167ms)\n✔ путь вне /kanban → 404 (12.0644ms)\n✔ ensureDependencies ставит недостающую зависимость (16.7412ms)\n✔ GET /kanban/api/workspaces отдаёт зарегистрированные воркспейсы (4.8759ms)\n✔ GET /kanban/api/realm до настройки → configured false (5.0391ms)\n✔ POST /kanban/api/realm сохраняет реалм из меню и включает доску (16.8872ms)\n✔ apply регистрирует /kanban на webServer (17.8394ms)\n✔ POST /api/epic создаёт эпик, /api/board отдаёт допустимые переходы (43.3297ms)\n✔ POST /api/transition двигает эпик draft → agreeing и отклоняет недопустимый (108.7635ms)\n✔ POST /api/task создаёт наряд под эпиком (80.9909ms)\n✔ GET /api/card/<id> отдаёт карточку с телом и журналом; неизвестный id → 404 (131.7686ms)\n✔ карточка: parse ↔ render сохраняет мета и тело (3.8544ms)\n✔ эпик: draft → agreeing разрешён архитектору (57.4144ms)\n✔ эпик: draft → done запрещён, список допустимых назван (19.4309ms)\n✔ несуществующая карточка → [unknown-card] (7.3289ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (55.5234ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (38.1923ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (88.3191ms)\n✔ повтор письма → [duplicate], состояние не меняется (61.5994ms)\n✔ stale revision отклоняется (38.8234ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (78.4358ms)\n✔ sweep: истёкший agree_until → needs-decision (65.6255ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (94.5894ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (59.1666ms)\n✔ создание карточек без явного id — системный UUID (26.7439ms)\n✔ createEpic требует название, createTask — эпик (3.8417ms)\n✔ createEpic сохраняет Результат эпика (14.4769ms)\n✔ createTask сохраняет спеку работы (21.6133ms)\n✔ sweep: цикл blocked_by → оба наряда в needs-decision (84.8865ms)\n✔ sweep: линейный blocked_by без цикла не меняет статусы (40.7642ms)\n✔ маркер и payload читаются из Subject и тела (5.1951ms)\n✔ renderLetter: шапка идёт в фиксированном порядке, тело отделено пустой строкой (1.2546ms)\n✔ processLetter: [task-accept] переводит agreed → in-progress (77.8ms)\n✔ processLetter: [stage-ready] без evidence → [transition-rejected] (59.9886ms)\n✔ processLetter: [stage-ready] с evidence → integration (87.0061ms)\n✔ processLetter: [blocked] → blocked (80.8589ms)\n✔ processLetter: неизвестный маркер не применяется (45.3273ms)\n✔ sweepOutboxes: читает новое письмо, пишет ответ, повторно не берёт (126.691ms)\n✔ sweepOutboxes: письмо без Session не обрабатывается (83.7152ms)\n✔ processLetter: [agree-epic] вне agreeing отклоняется (17.7792ms)\n✔ processLetter: [agree-epic] частичное согласие фиксируется (46.7587ms)\n✔ processLetter: повтор [agree-epic] → duplicate (46.6768ms)\n✔ processLetter: все involved согласны → эпик agreed (96.56ms)\n✔ processLetter: [agree-epic] без версий принимается (60.0946ms)\n✔ offerTask пишет письмо [task-offer] адресату в outbox (41.8988ms)\n✔ processLetter: [interface-agreed] переводит наряд proposed → agreed, повтор не ломает (35.1932ms)\n✔ processLetter: [subtask-plan] ставит total и done=0 (39.1241ms)\n✔ processLetter: [subtask-done] увеличивает done (60.1501ms)\n✔ processLetter: [result-failed] переводит accepted → rework (62.1052ms)\nℹ tests 53\nℹ suites 0\nℹ pass 53\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1734.4906\n",
+      "stderrPreview": ""
+    }
+  ],
+  "executed": 2,
+  "failed": 1,
+  "failedIds": [
+    "C1"
+  ],
+  "allGreen": false,
+  "redProven": true,
+  "redExpectation": {
+    "configured": true,
+    "ok": true,
+    "errors": [],
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "checkDefects": [],
+    "reasonChecks": [
+      {
+        "id": "C1",
+        "ok": true,
+        "distance": 0,
+        "total": 1,
+        "window": 25
+      }
+    ],
+    "reasonWindow": 25
+  },
+  "bypasses": {
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "log": "red.log"
+}

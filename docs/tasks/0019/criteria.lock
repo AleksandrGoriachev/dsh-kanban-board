@@ -1,0 +1,62 @@
+{
+  "version": 3,
+  "task": "0019",
+  "taskFileSha256": "e83e1270d3ee08a93b5e2de2bd5d9a736b49239e29717d9f6de117e47860da3a",
+  "criteriaSha256": "61b0efd6e7be50174f6bed8a11a4434bf9a26176b3f8f775867a5775678b330a",
+  "criteriaJsonSha256": "9a04145f07d44f6f6cc73862b6715f1b43a423cd93d93342d7c323c70fd634c6",
+  "attackSha256": null,
+  "contractCommit": "10ae32ff8a834e1b28dc2d3aac336fa3cd3d110e",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "lib/**",
+      "test/**",
+      "package.json",
+      "docs/tasks/0019/**"
+    ],
+    "protectedPaths": [
+      "checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0019/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0019/checks/realm-save.mjs",
+        "cwd": ".",
+        "timeoutMs": 60000,
+        "expect": {
+          "exitCode": 0
+        },
+        "covers": [
+          "lib/**",
+          "package.json"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass [1-9]"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-23T10:23:17.169Z",
+  "tool": "subagent-workflow/2.6.94"
+}

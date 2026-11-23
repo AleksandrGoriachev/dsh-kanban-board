@@ -36,8 +36,8 @@ try {
   const form = (formStart >= 0 && formEnd > formStart) ? client.slice(formStart, formEnd) : '';
   if (!form) fails.push('клиент: не найден RealmForm');
   else {
-    if (!/finallys*{[sS]{0,200}?setSaving(false)/.test(form)) fails.push('клиент: RealmForm.save не сбрасывает setSaving(false) в finally — кнопка зависает на «Сохраняю…»');
-    if (!/setSaving(true)/.test(form)) fails.push('клиент: RealmForm.save не ставит setSaving(true)');
+    if (!/finally\s*\{[\s\S]{0,200}?setSaving\(false\)/.test(form)) fails.push('клиент: RealmForm.save не сбрасывает setSaving(false) в finally — кнопка зависает на «Сохраняю…»');
+    if (!/setSaving\(true\)/.test(form)) fails.push('клиент: RealmForm.save не ставит setSaving(true)');
   }
 } finally {
   try { fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); } catch { /* temp */ }
