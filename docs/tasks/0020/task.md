@@ -20,7 +20,8 @@
     "lib/**",
     "test/**",
     "package.json",
-    "docs/tasks/0020/**"
+    "docs/tasks/0020/task.md",
+    "docs/tasks/0020/criteria.json"
   ],
   "protectedPaths": [
     "docs/tasks/0020/checks/**"
