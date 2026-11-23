@@ -1,0 +1,55 @@
+{
+  "task": "0021",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL realm-form:"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "RealmForm: галочки из реалма, текущий воркспейс, заметка; 0.4.3",
+      "command": "node docs/tasks/0021/checks/realm-form.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass [1-9]"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
