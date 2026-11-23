@@ -1,0 +1,63 @@
+{
+  "version": 3,
+  "task": "0023",
+  "taskFileSha256": "9746b84cbd79f6fc92f7c14ed5bb04ef2eb90f7dfad488b16b15d7ba16251ae5",
+  "criteriaSha256": "a7c3de58f6958f824bb401fb9dfbf1f40a43dc951b9e4f691ad7a7f3754ac7f4",
+  "criteriaJsonSha256": "d789b2cc46ea1efaa86fe74ea41cf103ea20ec668a91653d3750924c716bf181",
+  "attackSha256": null,
+  "contractCommit": "df23aad03a7c989313a28e4176a34612bcaaa506",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "lib/**",
+      "test/**",
+      "package.json",
+      "docs/tasks/0023/task.md",
+      "docs/tasks/0023/criteria.json"
+    ],
+    "protectedPaths": [
+      "docs/tasks/0023/checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0023/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0023/checks/realm-form-v3.mjs",
+        "cwd": ".",
+        "timeoutMs": 60000,
+        "expect": {
+          "exitCode": 0
+        },
+        "covers": [
+          "lib/**",
+          "package.json"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass 53"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-23T22:40:14.844Z",
+  "tool": "subagent-workflow/2.6.103"
+}
