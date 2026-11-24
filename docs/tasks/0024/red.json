@@ -1,0 +1,85 @@
+{
+  "version": 5,
+  "kind": "red",
+  "tool": "subagent-workflow/2.6.103",
+  "task": "0024",
+  "createdAt": "2026-11-24T10:07:31.032Z",
+  "base": "HEAD",
+  "baseSha": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+  "headSha": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+  "contractCommit": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+  "criteriaSha256": "0a6985e064d8a939791707bfedfcf75ebc813b113497e6010ae021baf2962761",
+  "criteriaJsonSha256": "229a8cd48836149dfba71e30c83e73f7263c30fde57bfd243ff231e10f08719b",
+  "dirtyPaths": [
+    "docs/tasks/0024/criteria.lock"
+  ],
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0024/checks/realm-checks-v4.mjs",
+      "exitCode": 1,
+      "durationMs": 878,
+      "passed": false,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [
+        "exit code 1 != 0"
+      ],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "6e90dc7cef64f41c03b08ab7b837b8bf904e8267c1cc8b40c54287deb10a052c",
+      "stdoutPreview": "",
+      "stderrPreview": "FAIL realm-checks-v4: .gitignore не игнорирует board/journal.jsonl; мотор не обрабатывает [subtask-approved]; ожидалась версия 0.4.6, сейчас 0.4.5\n"
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 3211,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "70f724b6e749464737999f9bf4a82e7fe651bc1bc785a2fcf19ee6d4d22c432a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ GET /kanban/api/board отдаёт эпики, наряды и журнал (81.6205ms)\n✔ GET /kanban/api/status: реалм и зависимость установлена (15.1629ms)\n✔ POST /kanban/api/sweep без confirm → 400 (31.0468ms)\n✔ POST /kanban/api/deps/install вызывает installBundle (20.3523ms)\n✔ не-loopback запрос → 403 (12.1051ms)\n✔ путь вне /kanban → 404 (12.8749ms)\n✔ ensureDependencies ставит недостающую зависимость (9.4446ms)\n✔ GET /kanban/api/workspaces отдаёт зарегистрированные воркспейсы (3.5945ms)\n✔ GET /kanban/api/realm до настройки → configured false (5.1271ms)\n✔ POST /kanban/api/realm сохраняет реалм из меню и включает доску (17.4776ms)\n✔ apply регистрирует /kanban на webServer (17.6685ms)\n✔ POST /api/epic создаёт эпик, /api/board отдаёт допустимые переходы (48.8629ms)\n✔ POST /api/transition двигает эпик draft → agreeing и отклоняет недопустимый (89.4345ms)\n✔ POST /api/task создаёт наряд под эпиком (67.0876ms)\n✔ GET /api/card/<id> отдаёт карточку с телом и журналом; неизвестный id → 404 (139.6647ms)\n✔ карточка: parse ↔ render сохраняет мета и тело (8.7249ms)\n✔ эпик: draft → agreeing разрешён архитектору (64.9232ms)\n✔ эпик: draft → done запрещён, список допустимых назван (20.8934ms)\n✔ несуществующая карточка → [unknown-card] (5.1576ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (60.9618ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (38.8041ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (71.0286ms)\n✔ повтор письма → [duplicate], состояние не меняется (57.2775ms)\n✔ stale revision отклоняется (35.2412ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (74.0252ms)\n✔ sweep: истёкший agree_until → needs-decision (66.0098ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (99.5482ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (49.4334ms)\n✔ создание карточек без явного id — системный UUID (25.1106ms)\n✔ createEpic требует название, createTask — эпик (6.159ms)\n✔ createEpic сохраняет Результат эпика (13.1638ms)\n✔ createTask сохраняет спеку работы (22.0321ms)\n✔ sweep: цикл blocked_by → оба наряда в needs-decision (62.3864ms)\n✔ sweep: линейный blocked_by без цикла не меняет статусы (34.294ms)\n✔ маркер и payload читаются из Subject и тела (6.699ms)\n✔ renderLetter: шапка идёт в фиксированном порядке, тело отделено пустой строкой (1.6715ms)\n✔ processLetter: [task-accept] переводит agreed → in-progress (63.2014ms)\n✔ processLetter: [stage-ready] без evidence → [transition-rejected] (59.4621ms)\n✔ processLetter: [stage-ready] с evidence → integration (68.9394ms)\n✔ processLetter: [blocked] → blocked (72.1438ms)\n✔ processLetter: неизвестный маркер не применяется (42.1888ms)\n✔ sweepOutboxes: читает новое письмо, пишет ответ, повторно не берёт (141.3719ms)\n✔ sweepOutboxes: письмо без Session не обрабатывается (57.6366ms)\n✔ processLetter: [agree-epic] вне agreeing отклоняется (20.2608ms)\n✔ processLetter: [agree-epic] частичное согласие фиксируется (34.5566ms)\n✔ processLetter: повтор [agree-epic] → duplicate (38.2418ms)\n✔ processLetter: все involved согласны → эпик agreed (55.6617ms)\n✔ processLetter: [agree-epic] без версий принимается (44.6545ms)\n✔ offerTask пишет письмо [task-offer] адресату в outbox (26.4808ms)\n✔ processLetter: [interface-agreed] переводит наряд proposed → agreed, повтор не ломает (32.5854ms)\n✔ processLetter: [subtask-plan] ставит total и done=0 (33.8873ms)\n✔ processLetter: [subtask-done] увеличивает done (51.152ms)\n✔ processLetter: [result-failed] переводит accepted → rework (59.1424ms)\nℹ tests 53\nℹ suites 0\nℹ pass 53\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1852.2303\n",
+      "stderrPreview": ""
+    }
+  ],
+  "executed": 2,
+  "failed": 1,
+  "failedIds": [
+    "C1"
+  ],
+  "allGreen": false,
+  "redProven": true,
+  "redKind": "proven",
+  "noRed": null,
+  "redExpectation": {
+    "configured": true,
+    "ok": true,
+    "errors": [],
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "noRed": null,
+    "checkDefects": [],
+    "reasonChecks": [
+      {
+        "id": "C1",
+        "ok": true,
+        "distance": 0,
+        "total": 1,
+        "window": 25
+      }
+    ],
+    "reasonWindow": 25
+  },
+  "bypasses": {
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "log": "red.log"
+}
