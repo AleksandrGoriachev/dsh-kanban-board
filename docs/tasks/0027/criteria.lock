@@ -1,0 +1,66 @@
+{
+  "version": 3,
+  "task": "0027",
+  "taskFileSha256": "d988d240966d21481640f2f6fa1662814c39557bdfe14e0ca2e9c31b481febbb",
+  "criteriaSha256": "241a4a7b954368cd5e18978be8457ba102a66844233f43adac3cdcc1bdf6a4d2",
+  "criteriaJsonSha256": "ef8d8f8a9c788924561c8282984fe0f5c31e92c1da27966235adb0e031080b76",
+  "attackSha256": null,
+  "contractCommit": "024e819445d9efc4cf06c3eedfd78e57ea0cec36",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "lib/**",
+      "test/**",
+      "package.json",
+      "docs/PROTOCOL.md",
+      "docs/tasks/0027/task.md",
+      "docs/tasks/0027/criteria.json"
+    ],
+    "protectedPaths": [
+      "docs/tasks/0027/checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0027/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0027/checks/subtask-verdict.mjs",
+        "cwd": ".",
+        "timeoutMs": 90000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "OK subtask-verdict"
+        },
+        "covers": [
+          "docs/PROTOCOL.md",
+          "lib/**",
+          "package.json"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass 53"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-24T21:20:50.936Z",
+  "tool": "subagent-workflow/2.6.103"
+}

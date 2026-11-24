@@ -1,0 +1,126 @@
+{
+  "version": 4,
+  "kind": "verify",
+  "acceptanceNonce": "557dbc71bb77eb3afddae2d4fe16ff01",
+  "runKind": "accept",
+  "task": "0027",
+  "createdAt": "2026-11-24T21:26:54.170Z",
+  "headSha": "024e819445d9efc4cf06c3eedfd78e57ea0cec36",
+  "contractCommit": "024e819445d9efc4cf06c3eedfd78e57ea0cec36",
+  "criteriaSha256": "241a4a7b954368cd5e18978be8457ba102a66844233f43adac3cdcc1bdf6a4d2",
+  "criteriaJsonSha256": "ef8d8f8a9c788924561c8282984fe0f5c31e92c1da27966235adb0e031080b76",
+  "taskFileSha256": "d988d240966d21481640f2f6fa1662814c39557bdfe14e0ca2e9c31b481febbb",
+  "changedPaths": [
+    "docs/PROTOCOL.md",
+    "docs/tasks/0027/criteria.lock",
+    "docs/tasks/0027/gates.jsonl",
+    "docs/tasks/0027/gates.jsonl.tip",
+    "docs/tasks/0027/red.json",
+    "docs/tasks/0027/verify.executor.json",
+    "docs/tasks/0027/verify.json",
+    "package.json"
+  ],
+  "coverage": {
+    "declared": 5,
+    "covered": [
+      {
+        "path": "package.json",
+        "criterion": "C1"
+      }
+    ],
+    "uncovered": [],
+    "mode": "fail",
+    "warnings": []
+  },
+  "effects": {
+    "required": false,
+    "checked": false,
+    "mode": "fail",
+    "declared": [],
+    "links": [],
+    "ok": true
+  },
+  "results": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0027/checks/subtask-verdict.mjs",
+      "exitCode": 0,
+      "durationMs": 1220,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "e9110b0442993e9f5ae503fab25bbae2b9ed05da8d24ba535c804d48b6e36311",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "OK subtask-verdict: точные значения, approved переживает done, план аннулирует вердикт, PROTOCOL без несуществующего маркера; 0.4.9\n",
+      "stderrPreview": ""
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2826,
+      "passed": true,
+      "timedOut": false,
+      "checkDefect": null,
+      "reasons": [],
+      "stdoutSha256": "418abf070e566519dcd89b55a5fed67c6422219db7b55d2084dfc87f977828b4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPreview": "✔ GET /kanban/api/board отдаёт эпики, наряды и журнал (81.851ms)\n✔ GET /kanban/api/status: реалм и зависимость установлена (29.5001ms)\n✔ POST /kanban/api/sweep без confirm → 400 (28.1129ms)\n✔ POST /kanban/api/deps/install вызывает installBundle (18.3857ms)\n✔ не-loopback запрос → 403 (21.4727ms)\n✔ путь вне /kanban → 404 (14.8623ms)\n✔ ensureDependencies ставит недостающую зависимость (14.5393ms)\n✔ GET /kanban/api/workspaces отдаёт зарегистрированные воркспейсы (7.6302ms)\n✔ GET /kanban/api/realm до настройки → configured false (5.2865ms)\n✔ POST /kanban/api/realm сохраняет реалм из меню и включает доску (37.414ms)\n✔ apply регистрирует /kanban на webServer (17.0429ms)\n✔ POST /api/epic создаёт эпик, /api/board отдаёт допустимые переходы (60.9099ms)\n✔ POST /api/transition двигает эпик draft → agreeing и отклоняет недопустимый (99.1996ms)\n✔ POST /api/task создаёт наряд под эпиком (93.4593ms)\n✔ GET /api/card/<id> отдаёт карточку с телом и журналом; неизвестный id → 404 (116.7414ms)\n✔ карточка: parse ↔ render сохраняет мета и тело (3.7781ms)\n✔ эпик: draft → agreeing разрешён архитектору (76.3398ms)\n✔ эпик: draft → done запрещён, список допустимых назван (25.965ms)\n✔ несуществующая карточка → [unknown-card] (6.1725ms)\n✔ наряд: proposed → agreed → in-progress с будущим лизом (118.1268ms)\n✔ task-accept с лизом в прошлом → [transition-rejected] (75.9823ms)\n✔ stage-ready без evidence → отказ; с evidence → integration (93.7806ms)\n✔ повтор письма → [duplicate], состояние не меняется (88.9533ms)\n✔ stale revision отклоняется (37.4682ms)\n✔ sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease (94.4403ms)\n✔ sweep: истёкший agree_until → needs-decision (62.8432ms)\n✔ replay: подменённый статус карточки восстанавливается из журнала (70.0435ms)\n✔ журнал append-only: события только добавляются, порядок сохраняется (68.8302ms)\n✔ создание карточек без явного id — системный UUID (35.9887ms)\n✔ createEpic требует название, createTask — эпик (6.4103ms)\n✔ createEpic сохраняет Результат эпика (26.2104ms)\n✔ createTask сохраняет спеку работы (36.087ms)\n✔ sweep: цикл blocked_by → оба наряда в needs-decision (81.5459ms)\n✔ sweep: линейный blocked_by без цикла не меняет статусы (40.6509ms)\n✔ маркер и payload читаются из Subject и тела (5.8125ms)\n✔ renderLetter: шапка идёт в фиксированном порядке, тело отделено пустой строкой (1.0387ms)\n✔ processLetter: [task-accept] переводит agreed → in-progress (89.0427ms)\n✔ processLetter: [stage-ready] без evidence → [transition-rejected] (117.63ms)\n✔ processLetter: [stage-ready] с evidence → integration (113.9002ms)\n✔ processLetter: [blocked] → blocked (79.9607ms)\n✔ processLetter: неизвестный маркер не применяется (39.8257ms)\n✔ sweepOutboxes: читает новое письмо, пишет ответ, повторно не берёт (115.4291ms)\n✔ sweepOutboxes: письмо без Session не обрабатывается (61.6738ms)\n✔ processLetter: [agree-epic] вне agreeing отклоняется (24.9138ms)\n✔ processLetter: [agree-epic] частичное согласие фиксируется (103.2556ms)\n✔ processLetter: повтор [agree-epic] → duplicate (61.1346ms)\n✔ processLetter: все involved согласны → эпик agreed (67.5703ms)\n✔ processLetter: [agree-epic] без версий принимается (55.397ms)\n✔ offerTask пишет письмо [task-offer] адресату в outbox (34.6017ms)\n✔ processLetter: [interface-agreed] переводит наряд proposed → agreed, повтор не ломает (32.2203ms)\n✔ processLetter: [subtask-plan] ставит total и done=0 (37.0607ms)\n✔ processLetter: [subtask-done] увеличивает done (80.1909ms)\n✔ processLetter: [result-failed] переводит accepted → rework (83.9523ms)\nℹ tests 53\nℹ suites 0\nℹ pass 53\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1958.17\n",
+      "stderrPreview": ""
+    }
+  ],
+  "executed": 2,
+  "failed": 0,
+  "manualSkipped": 0,
+  "allPassed": true,
+  "violations": [],
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false
+  },
+  "red": {
+    "kind": "proven",
+    "noRed": null,
+    "baseSha": "024e819445d9efc4cf06c3eedfd78e57ea0cec36",
+    "contractCommit": "024e819445d9efc4cf06c3eedfd78e57ea0cec36",
+    "criteriaJsonSha256": "ef8d8f8a9c788924561c8282984fe0f5c31e92c1da27966235adb0e031080b76",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "noRed": null,
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    },
+    "bypasses": {
+      "allowDirty": false,
+      "allowBaseMismatch": false
+    },
+    "log": "red.log"
+  },
+  "changes": "own-uncommitted",
+  "headAtVerify": "024e819445d9efc4cf06c3eedfd78e57ea0cec36",
+  "headDrift": null,
+  "worktreeDigest": "eff2e6d883081d1a0d9e813f23426c6ec34f7ad341a579372410ace4c86e598c",
+  "log": "verify.log"
+}
