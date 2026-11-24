@@ -1,0 +1,148 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0026",
+  "title": "Поведенческая проверка legacy-карточки и порядка approve/plan; 0.4.8",
+  "risk": "medium",
+  "taskFileSha256": "6dad46372cf244d38c90b0a8d495db6ae8d3dcbf93c23931bafff97df5dd2d12",
+  "criteriaSha256": "3610cd07f1b51c5d1d757dcd2787c0cdcf4d7290b4692c8a5a264acf20922674",
+  "criteriaJsonSha256": "a169607ecdcc36214d42f827aa965153a6e44280fb7183c1604de9ced2f66d08",
+  "contractCommit": "587e1d9264652e9744396f1a3b8fe4d4173637d8",
+  "baseCommit": "587e1d9264652e9744396f1a3b8fe4d4173637d8",
+  "candidateCommit": "f75f46e026f7449c900153c03b3392f258f44eb0",
+  "tree": "f8b3d56be532dea24ca8abb1b1308fa86e9cbde4",
+  "worktreeDigest": "9349e4db1e9a35afb288e5a4b1ffaa10106edb8c04f9adf06131695c3c4e5312",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "c0427971-478d-4f18-92ad-07f0ece46fe1",
+    "model": "glm-5.3-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "50e52ad84b9c8dbc6e15304921db4234",
+    "runKind": "accept",
+    "startedAt": "2026-11-24T21:14:34.096Z",
+    "finishedAt": "2026-11-24T21:14:49.925Z",
+    "durationMs": 15848,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "0c5d7284286c29340c9139b7865f83a99047ca7164a2b04e4008fe37622070d1",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "kind": "proven",
+    "noRed": null,
+    "baseSha": "587e1d9264652e9744396f1a3b8fe4d4173637d8",
+    "contractCommit": "587e1d9264652e9744396f1a3b8fe4d4173637d8",
+    "criteriaJsonSha256": "a169607ecdcc36214d42f827aa965153a6e44280fb7183c1604de9ced2f66d08",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "noRed": null,
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0026/checks/subtask-legacy.mjs",
+      "exitCode": 0,
+      "durationMs": 914,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 2601,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-24T21:14:50.793Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "reviewReceipt": null,
+  "reviewBinding": {
+    "contractCommit": "587e1d9264652e9744396f1a3b8fe4d4173637d8",
+    "taskFileSha256": "6dad46372cf244d38c90b0a8d495db6ae8d3dcbf93c23931bafff97df5dd2d12",
+    "bound": false,
+    "allowedBy": null,
+    "note": null
+  },
+  "headDrift": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "z2Uk1qkihtmK1xrEJSeRR+dltWRkVk0OoW3ljOAiTgFDpF7d391y01P2UUrGKEbjEWmLqMxnTzBk893T+uNlBQ=="
+}
