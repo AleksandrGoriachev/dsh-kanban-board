@@ -1,0 +1,56 @@
+{
+  "task": "0024",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL realm-checks-v4:"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Мутант-устойчивые хелперы, parity, .gitignore, subtask-approved; 0.4.6",
+      "command": "node docs/tasks/0024/checks/realm-checks-v4.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json",
+        ".gitignore"
+      ],
+      "timeoutMs": 60000,
+      "expect": {
+        "exitCode": 0
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные (ровно 53)",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass 53"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
