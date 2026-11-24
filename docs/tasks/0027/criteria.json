@@ -1,0 +1,57 @@
+{
+  "task": "0027",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL subtask-verdict:"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Точные значения, approved переживает done, план аннулирует вердикт, PROTOCOL без несуществующего маркера; 0.4.9",
+      "command": "node docs/tasks/0027/checks/subtask-verdict.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json",
+        "docs/PROTOCOL.md"
+      ],
+      "timeoutMs": 90000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "OK subtask-verdict"
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные (ровно 53)",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass 53"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
