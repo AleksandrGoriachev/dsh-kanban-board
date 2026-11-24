@@ -1,0 +1,56 @@
+{
+  "task": "0028",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 25,
+    "reasons": {
+      "C1": "FAIL checks-version:"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "16 проверок без жёсткой версии, «не ниже» есть, 0021 снята; 0.4.10",
+      "command": "node docs/tasks/0028/checks/checks-version.mjs",
+      "cwd": ".",
+      "covers": [
+        "docs/tasks/*/checks/**",
+        "package.json"
+      ],
+      "timeoutMs": 90000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "OK checks-version"
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные (ровно 53)",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass 53"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
