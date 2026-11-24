@@ -1,0 +1,148 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0024",
+  "title": "Проверки реалма: мутант-устойчивая C1, parity копий, гигиена дерева, subbit-approved; 0.4.6",
+  "risk": "medium",
+  "taskFileSha256": "a03955a03c0efbdf2f4c5e305043b0bc83687eef24700fb80d033f677a54fc49",
+  "criteriaSha256": "0a6985e064d8a939791707bfedfcf75ebc813b113497e6010ae021baf2962761",
+  "criteriaJsonSha256": "229a8cd48836149dfba71e30c83e73f7263c30fde57bfd243ff231e10f08719b",
+  "contractCommit": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+  "baseCommit": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+  "candidateCommit": "b16fb07c1589c271646de429c2c605eae0fb6b70",
+  "tree": "9db590ed987a5fcba7e584603e48ed367bd30dad",
+  "worktreeDigest": "b4526de83e8184cf19f5c9efdb68c729740c3ab3172b2231e31c94d00e515921",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "89b81ccd-d8d7-4f57-bf42-4b8f93eaa823",
+    "model": "deepseek-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "2f7e167242f8b4fd2207ddbee8dbcc31",
+    "runKind": "accept",
+    "startedAt": "2026-11-24T11:34:29.948Z",
+    "finishedAt": "2026-11-24T11:34:45.479Z",
+    "durationMs": 15538,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "986beb6ffdfc1316ae10793eea783357c52df7b77f034e7f71f4cf6a9b160eee",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "kind": "proven",
+    "noRed": null,
+    "baseSha": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+    "contractCommit": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+    "criteriaJsonSha256": "229a8cd48836149dfba71e30c83e73f7263c30fde57bfd243ff231e10f08719b",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "noRed": null,
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0024/checks/realm-checks-v4.mjs",
+      "exitCode": 0,
+      "durationMs": 573,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 3789,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-24T11:34:46.383Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "reviewReceipt": null,
+  "reviewBinding": {
+    "contractCommit": "6d5fc86ed4f776922fcab67993e4c9c96cb70534",
+    "taskFileSha256": "a03955a03c0efbdf2f4c5e305043b0bc83687eef24700fb80d033f677a54fc49",
+    "bound": false,
+    "allowedBy": null,
+    "note": null
+  },
+  "headDrift": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "QghoMWY3FzPVknqddiLtxF0jMdlXYQqg1Q2yxrwntcfS2vFXs5Pgr3v5+lYgXbrroyJ3fvnMQ+HeAx/8WKWWCw=="
+}
