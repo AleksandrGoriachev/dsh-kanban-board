@@ -1,0 +1,179 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0028",
+  "title": "Проверки принятых задач: версия не ниже, снять устаревшее утверждение 0021; 0.4.10",
+  "risk": "medium",
+  "taskFileSha256": "6756ac7804e6cc613a17f5baf212f1183087ba50975ade4bd35b5c63d9aa1e0a",
+  "criteriaSha256": "56841056a3f21b0501d47c1ddff95772ce67f32369e868b09e18987fa087de2e",
+  "criteriaJsonSha256": "332ba284970542359d3bef69e8757581d535c2ccef95be89d2753fcdcce37734",
+  "contractCommit": "2442b231c9e12a149928cca5690ad63886457e20",
+  "baseCommit": "2442b231c9e12a149928cca5690ad63886457e20",
+  "candidateCommit": "0a5c91843aa5cb07606391ebdfd3dc356937b7c2",
+  "tree": "420ceefeaa645d03d4f3099a3cd5b8f929bbacf6",
+  "worktreeDigest": "0980f83e5fd3f1899fa2fe2b336fae893a4a02dc2e10b6027ab061f82cd9c629",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "07fc83e4-ca5d-405c-bf9d-398d8299084b",
+    "model": "glm-5.3-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "1f133d351a8111560c9a1212e3039065",
+    "runKind": "accept",
+    "startedAt": "2026-11-24T23:19:46.609Z",
+    "finishedAt": "2026-11-24T23:20:00.545Z",
+    "durationMs": 13949,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "bea2510e1442a319a800fd19f57f57b29e3273b7f8785dff81f8b84d63053c7d",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "kind": "proven",
+    "noRed": null,
+    "baseSha": "2442b231c9e12a149928cca5690ad63886457e20",
+    "contractCommit": "2442b231c9e12a149928cca5690ad63886457e20",
+    "criteriaJsonSha256": "332ba284970542359d3bef69e8757581d535c2ccef95be89d2753fcdcce37734",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "noRed": null,
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 25
+        }
+      ],
+      "reasonWindow": 25
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0028/checks/checks-version.mjs",
+      "exitCode": 0,
+      "durationMs": 727,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 3161,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-24T23:20:01.569Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "reviewReceipt": null,
+  "reviewBinding": {
+    "contractCommit": "2442b231c9e12a149928cca5690ad63886457e20",
+    "taskFileSha256": "6756ac7804e6cc613a17f5baf212f1183087ba50975ade4bd35b5c63d9aa1e0a",
+    "bound": false,
+    "allowedBy": null,
+    "note": null
+  },
+  "headDrift": {
+    "from": "2442b231c9e12a149928cca5690ad63886457e20",
+    "to": "c75954e2b3aa6b1508748fc008e53a5d74c77b4a",
+    "foreignCommits": 1,
+    "paths": [
+      "docs/tasks/0006/checks/version.mjs",
+      "docs/tasks/0008/checks/version.mjs",
+      "docs/tasks/0009/checks/cleanup.mjs",
+      "docs/tasks/0010/checks/interface-agreed.mjs",
+      "docs/tasks/0012/checks/cycle.mjs",
+      "docs/tasks/0013/checks/ui-details.mjs",
+      "docs/tasks/0015/checks/reframe.mjs",
+      "docs/tasks/0017/checks/ui-p0.mjs",
+      "docs/tasks/0018/checks/status-version.mjs",
+      "docs/tasks/0021/checks/realm-form.mjs",
+      "docs/tasks/0022/checks/realm-form-v2.mjs",
+      "docs/tasks/0023/checks/realm-form-v3.mjs",
+      "docs/tasks/0024/checks/realm-checks-v4.mjs",
+      "docs/tasks/0025/checks/subtask-approved.mjs",
+      "docs/tasks/0026/checks/subtask-legacy.mjs",
+      "docs/tasks/0027/checks/subtask-verdict.mjs"
+    ]
+  },
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "worktree": {
+    "headBefore": "c75954e2b3aa6b1508748fc008e53a5d74c77b4a",
+    "head": "c75954e2b3aa6b1508748fc008e53a5d74c77b4a",
+    "trackedChanges": 1,
+    "extras": [],
+    "stashes": [
+      "stash@{0} On main: coord"
+    ]
+  },
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "Wi6tpwxUWFhUExOp8PKtoIRp9JkdmMk0O95UsSbbI77Eqvec95syVAFj9GeEtkCr7/cSph9zAP6w3r8zKBSNCw=="
+}
