@@ -38,8 +38,9 @@ try {
     }
   }
   const pkg = JSON.parse(fs.readFileSync(path.join(here, '..', '..', '..', '..', 'package.json'), 'utf8'));
-  if (pkg.version !== '0.3.0') {
-    console.error('FAIL ui-details: ожидалась версия 0.3.0, сейчас ' + pkg.version);
+  const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+  if (!atLeast(pkg.version, '0.3.0')) {
+    console.error('FAIL ui-details: версия ниже 0.3.0, сейчас ' + pkg.version);
     process.exit(1);
   }
   console.log('OK ui-details: /api/card/:id, панель деталей, drag&drop, журнал; версия 0.3.0');

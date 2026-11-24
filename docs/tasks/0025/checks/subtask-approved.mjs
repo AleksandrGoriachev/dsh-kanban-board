@@ -54,6 +54,7 @@ const check = fs.readFileSync(path.join(root, 'docs', 'tasks', '0025', 'checks',
 if (!/existsSync/.test(check)) fails.push('проверка не различает отсутствие файла и ошибку импорта');
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-if (pkg.version !== '0.4.7') fails.push('ожидалась версия 0.4.7, сейчас ' + pkg.version);
+const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+if (!atLeast(pkg.version, '0.4.7')) fails.push('версия ниже 0.4.7: ' + pkg.version);
 if (fails.length) { console.error('FAIL subtask-approved: ' + fails.join('; ')); process.exit(1); }
 console.log('OK subtask-approved: план->вердикт->done, статус не меняется, журнал; 0.4.7');

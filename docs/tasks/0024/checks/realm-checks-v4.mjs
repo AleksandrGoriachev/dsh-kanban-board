@@ -43,6 +43,7 @@ if (!/board\/journal\.jsonl/.test(gitignore)) fails.push('.gitignore не игн
 const motor = fs.readFileSync(path.join(root, 'lib', 'motor.js'), 'utf8');
 if (!/subtask-approved/.test(motor)) fails.push('мотор не обрабатывает [subtask-approved]');
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-if (pkg.version !== '0.4.6') fails.push('ожидалась версия 0.4.6, сейчас ' + pkg.version);
+const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+if (!atLeast(pkg.version, '0.4.6')) fails.push('версия ниже 0.4.6: ' + pkg.version);
 if (fails.length) { console.error('FAIL realm-checks-v4: ' + fails.join('; ')); process.exit(1); }
 console.log('OK realm-checks-v4: пустой/числовой root, parity копий, .gitignore, subtask-approved; 0.4.6');

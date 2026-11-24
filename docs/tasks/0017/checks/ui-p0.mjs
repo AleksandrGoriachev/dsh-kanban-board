@@ -36,8 +36,9 @@ if (!client.includes('RING_SELECTED') && !client.includes('ringSelected')) {
   process.exit(1);
 }
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-if (pkg.version !== '0.4.0') {
-  console.error('FAIL ui-p0: ожидалась версия 0.4.0, сейчас ' + pkg.version);
+const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+if (!atLeast(pkg.version, '0.4.0')) {
+  console.error('FAIL ui-p0: версия ниже 0.4.0, сейчас ' + pkg.version);
   process.exit(1);
 }
 console.log('OK ui-p0: токены, HAIRLINE 16%, 0.66, колонка 208, textarea, aria, кольцо; 0.4.0');

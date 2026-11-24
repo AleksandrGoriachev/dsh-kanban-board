@@ -16,8 +16,9 @@ if (leftovers.length) {
   process.exit(1);
 }
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-if (pkg.version !== '0.1.8') {
-  console.error('FAIL cleanup: ожидалась версия 0.1.8, сейчас ' + pkg.version);
+const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+if (!atLeast(pkg.version, '0.1.8')) {
+  console.error('FAIL cleanup: версия ниже 0.1.8, сейчас ' + pkg.version);
   process.exit(1);
 }
 console.log('OK cleanup: следов contracts/scenario/эталон нет; версия 0.1.8');

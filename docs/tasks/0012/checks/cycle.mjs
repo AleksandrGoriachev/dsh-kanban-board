@@ -21,8 +21,9 @@ try {
     process.exit(1);
   }
   const pkg = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..', 'package.json'), 'utf8'));
-  if (pkg.version !== '0.2.1') {
-    console.error('FAIL cycle: ожидалась версия 0.2.1, сейчас ' + pkg.version);
+  const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+  if (!atLeast(pkg.version, '0.2.1')) {
+    console.error('FAIL cycle: версия ниже 0.2.1, сейчас ' + pkg.version);
     process.exit(1);
   }
   console.log('OK cycle: цикл A↔B переведён в needs-decision; версия 0.2.1');

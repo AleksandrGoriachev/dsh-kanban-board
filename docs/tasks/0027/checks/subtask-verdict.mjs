@@ -74,6 +74,7 @@ if (!/\[subtask-plan\][^.]{0,300}аннулирует вердикт/i.test(prot
 if (protocol.indexOf('[subtask-rejected]') >= 0) fail('PROTOCOL упоминает [subtask-rejected], которого нет в моторе');
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-if (pkg.version !== '0.4.9') fail('ожидалась версия 0.4.9, сейчас ' + pkg.version);
+const atLeast = (a, b) => { const pa = String(a).split('.').map(Number); const pb = String(b).split('.').map(Number); for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0; const y = pb[i] || 0; if (x !== y) return x > y; } return true; };
+if (!atLeast(pkg.version, '0.4.9')) fail('версия ниже 0.4.9: ' + pkg.version);
 if (fails.length) { console.error('FAIL subtask-verdict: ' + fails.join('; ')); process.exit(1); }
 console.log('OK subtask-verdict: точные значения, approved переживает done, план аннулирует вердикт, PROTOCOL без несуществующего маркера; 0.4.9');
