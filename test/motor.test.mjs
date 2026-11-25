@@ -26,7 +26,7 @@ function letterFor(marker, body) {
   }));
 }
 function agreedTask(dir) {
-  createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+  createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
   assert.equal(apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' }).ok, true);
 }
 function inProgressTask(dir) {
@@ -135,9 +135,13 @@ test('sweepOutboxes: читает новое письмо, пишет ответ
     assert.equal(first.applied, 1);
     assert.equal(first.rejected, 0);
     assert.equal(loadCard(dir, 'E1-1').meta.status, 'in-progress');
-    const responses = fs.readdirSync(path.join(archExchange, 'outbox'));
+    // B4: ответ архитектора лежит в каталоге своей ветки; Thread = каталог.
+    const answerDir = path.join(archExchange, 'threads', 'kanban-E1');
+    const responses = fs.readdirSync(answerDir);
     assert.equal(responses.length, 1);
-    const answer = parseLetter(fs.readFileSync(path.join(archExchange, 'outbox', responses[0]), 'utf8'));
+    const answer = parseLetter(fs.readFileSync(path.join(answerDir, responses[0]), 'utf8'));
+    assert.equal(answer.headers.Thread, 'threads/kanban-E1');
+    assert.notEqual(answer.headers.Session, 'motor');
     assert.equal(answer.marker, 'transition-applied');
     const second = sweepOutboxes({ realm, boardDir: dir });
     assert.equal(second.results.length, 0);
@@ -232,7 +236,7 @@ test('processLetter: [agree-epic] без версий принимается', (
   } finally { cleanup(dir); }
 });
 
-test('offerTask пишет письмо [task-offer] адресату в outbox', () => {
+test('offerTask пишет письмо [task-offer] адресату в каталог ветки', () => {
   const dir = tmp('kanban-');
   const realmDir = tmp('realm-');
   try {
@@ -242,9 +246,14 @@ test('offerTask пишет письмо [task-offer] адресату в outbox'
     const realm = { version: 1, architect: { root: path.join(realmDir, 'architect'), exchange }, workspaces: [] };
     const written = offerTask({ runtime: { realm, boardDir: dir }, cardId: task.id, now: new Date('2026-01-01T00:00:00.000Z') });
     assert.equal(written.length, 1);
-    const letter = parseLetter(fs.readFileSync(path.join(exchange, 'outbox', written[0]), 'utf8'));
+    // B4: письмо лежит в каталоге своей ветки, и Thread шапки — ровно этот каталог.
+    const threadPath = path.join(exchange, 'threads', 'kanban-E2');
+    assert.ok(fs.existsSync(path.join(threadPath, written[0])), 'письмо оффера не в каталоге ветки');
+    const letter = parseLetter(fs.readFileSync(path.join(threadPath, written[0]), 'utf8'));
     assert.equal(letter.marker, 'task-offer');
     assert.equal(letter.headers.To, 'console');
+    assert.equal(letter.headers.Thread, 'threads/kanban-E2');
+    assert.equal(letter.headers.Ref, task.id);
     const payload = payloadOf(letter.body);
     assert.equal(payload.task, task.id);
     assert.equal(payload.spec, 'сделать X');

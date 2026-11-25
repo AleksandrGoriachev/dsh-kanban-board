@@ -83,7 +83,7 @@ test('несуществующая карточка → [unknown-card]', () => {
 test('наряд: proposed → agreed → in-progress с будущим лизом', () => {
   const dir = board();
   try {
-    createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     assert.equal(apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' }).ok, true);
     const lease = future();
     const r = apply(dir, {
@@ -101,7 +101,7 @@ test('наряд: proposed → agreed → in-progress с будущим лизо
 test('task-accept с лизом в прошлом → [transition-rejected]', () => {
   const dir = board();
   try {
-    createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' });
     const r = apply(dir, {
       card: 'E1-1', from: 'agreed', to: 'in-progress', by: 'motor',
@@ -116,7 +116,7 @@ test('task-accept с лизом в прошлом → [transition-rejected]', ()
 test('stage-ready без evidence → отказ; с evidence → integration', () => {
   const dir = board();
   try {
-    createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' });
     apply(dir, { card: 'E1-1', from: 'agreed', to: 'in-progress', by: 'motor', payload: { lease_until: future() } });
     const noEvidence = apply(dir, { card: 'E1-1', from: 'in-progress', to: 'integration', by: 'motor' });
@@ -133,7 +133,7 @@ test('stage-ready без evidence → отказ; с evidence → integration', 
 test('повтор письма → [duplicate], состояние не меняется', () => {
   const dir = board();
   try {
-    createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' });
     const request = {
       card: 'E1-1', from: 'agreed', to: 'in-progress', by: 'motor',
@@ -164,7 +164,7 @@ test('stale revision отклоняется', () => {
 test('sweep: истёкший лиз возвращает наряд в agreed и снимает owner/lease', () => {
   const dir = board();
   try {
-    createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' });
     apply(dir, {
       card: 'E1-1', from: 'agreed', to: 'in-progress', by: 'motor',
@@ -194,7 +194,7 @@ test('sweep: истёкший agree_until → needs-decision', () => {
 test('replay: подменённый статус карточки восстанавливается из журнала', () => {
   const dir = board();
   try {
-    createTask(dir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(dir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     apply(dir, { card: 'E1-1', from: 'proposed', to: 'agreed', by: 'architect' });
     apply(dir, { card: 'E1-1', from: 'agreed', to: 'in-progress', by: 'motor', payload: { lease_until: future() } });
     const card = loadCard(dir, 'E1-1');

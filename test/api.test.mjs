@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createKanbanRuntime, createWebHandler, ensureDependencies } from '../lib/api.js';
 import { createEpic, createTask, loadCard } from '../lib/board.js';
+import { parseLetter } from '../lib/letters.js';
 
 function tmp(prefix) { return fs.mkdtempSync(path.join(os.tmpdir(), prefix)); }
 function cleanup(dir) {
@@ -55,7 +56,7 @@ test('GET /kanban/api/board отдаёт эпики, наряды и журна�
     const realmFile = makeRealm(root);
     const boardDir = path.join(root, 'board');
     createEpic(boardDir, { id: 'E1', title: 'эпик', involved: [] });
-    createTask(boardDir, { id: 'E1-1', epic: 'E1', workspace: 'console' });
+    createTask(boardDir, { id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'console' });
     const runtime = createKanbanRuntime({ realm: realmFile, boardDir: 'board' });
     const handler = createWebHandler(runtime);
     const result = await call(handler, 'GET', '/kanban/api/board');
@@ -261,7 +262,7 @@ test('POST /api/task создаёт наряд под эпиком', async () =>
     const handler = createWebHandler(runtime);
     await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
     await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', involved: [] });
-    const task = await call(handler, 'POST', '/kanban/api/task', { confirm: true, id: 'E1-1', epic: 'E1', workspace: 'tv2' });
+    const task = await call(handler, 'POST', '/kanban/api/task', { confirm: true, id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'tv2' });
     assert.equal(task.status, 200);
     assert.equal(task.json.task.status, 'proposed');
     const boardResp = await call(handler, 'GET', '/kanban/api/board');
@@ -277,7 +278,7 @@ test('GET /api/card/<id> отдаёт карточку с телом и журн
     const handler = createWebHandler(runtime);
     await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
     await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', result: 'R' });
-    const task = await call(handler, 'POST', '/kanban/api/task', { confirm: true, id: 'E1-1', epic: 'E1', workspace: 'tv2', spec: 'S' });
+    const task = await call(handler, 'POST', '/kanban/api/task', { confirm: true, id: 'E1-1', title: 'наряд', epic: 'E1', workspace: 'tv2', spec: 'S' });
     assert.equal(task.status, 200);
     const card = await call(handler, 'GET', '/kanban/api/card/E1-1');
     assert.equal(card.status, 200);
@@ -294,5 +295,34 @@ test('GET /api/card/<id> отдаёт карточку с телом и журн
     const missing = await call(handler, 'GET', '/kanban/api/card/no-such-card');
     assert.equal(missing.status, 404);
     assert.equal(missing.json.code, 'unknown-card');
+  } finally { cleanup(root); }
+});
+
+test('POST /api/task: title доезжает до карточки, без title → 400 invalid-task', async () => {
+  const root = tmp('kanban-realm-');
+  try {
+    const realmFile = path.join(root, 'realm.json');
+    const runtime = createKanbanRuntime({ realm: realmFile, boardDir: 'board' });
+    const handler = createWebHandler(runtime);
+    await call(handler, 'POST', '/kanban/api/realm', { confirm: true, architect: { root }, workspaces: [] });
+    await call(handler, 'POST', '/kanban/api/epic', { confirm: true, id: 'E1', title: 'эпик', involved: [] });
+    const withTitle = await call(handler, 'POST', '/kanban/api/task', {
+      confirm: true, epic: 'E1', workspace: 'tv2', title: 'наряд с заголовком', session: 'session-1',
+    });
+    assert.equal(withTitle.status, 200);
+    assert.equal(withTitle.json.task.title, 'наряд с заголовком');
+    assert.equal(loadCard(runtime.boardDir, withTitle.json.task.id).meta.title, 'наряд с заголовком');
+    const withoutTitle = await call(handler, 'POST', '/kanban/api/task', { confirm: true, epic: 'E1', workspace: 'tv2' });
+    assert.equal(withoutTitle.status, 400);
+    assert.equal(withoutTitle.json.code, 'invalid-task');
+    assert.throws(() => createTask(runtime.boardDir, { epic: 'E1', workspace: 'tv2' }), /title/);
+    // Письмо-оффер: ветка совпадает с каталогом, Session — из запроса, Ref — id наряда.
+    const threadPath = path.join(root, 'coordination', 'threads', 'kanban-E1');
+    const letters = fs.existsSync(threadPath) ? fs.readdirSync(threadPath).filter((f) => f.endsWith('.md')) : [];
+    assert.equal(letters.length, 1);
+    const letter = parseLetter(fs.readFileSync(path.join(threadPath, letters[0]), 'utf8'));
+    assert.equal(letter.headers.Thread, 'threads/kanban-E1');
+    assert.equal(letter.headers.Session, 'session-1');
+    assert.equal(letter.headers.Ref, withTitle.json.task.id);
   } finally { cleanup(root); }
 });
