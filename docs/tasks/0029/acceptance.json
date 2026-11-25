@@ -1,0 +1,157 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0029",
+  "title": "Письма канбана: title наряда, реальная Session, Reply-To/Ref, ветка = каталог; 0.4.11",
+  "risk": "medium",
+  "taskFileSha256": "a187f8864dee0cdbb57e93a6e28fa06c1be8c3c4b109c7b89b4e69c8b5efed6d",
+  "criteriaSha256": "cefd42d1759fadca1f813ded165799d37d1b7d9f22af9137374851ad604e2949",
+  "criteriaJsonSha256": "cd6ec25e7b5120a39715fc579e5f7da8749bb798c66f1ceef1a932f58ec6c003",
+  "contractCommit": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+  "baseCommit": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+  "candidateCommit": "e26c120957d4c7eb03c3a885ba3f303bc52e621a",
+  "tree": "73c10fe39f24701035ac0112e93cda77cdfd41a4",
+  "worktreeDigest": "ee83b52acb1b5a08824dc0f841dda8ee607bca082afde450f23d92b04340adb0",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "5c273962-d1fb-48fc-adfb-ce9ac26b7428",
+    "model": "glm-5.3-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "62cbc344c828845b884ed32da71b1c48",
+    "runKind": "accept",
+    "startedAt": "2026-11-25T21:37:58.961Z",
+    "finishedAt": "2026-11-25T21:38:16.791Z",
+    "durationMs": 17831,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "e62643d3f483daf17f5dd6f80d909a71bbbd5b7b57ad4a32c78cc436aa58785e",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "kind": "proven",
+    "noRed": null,
+    "baseSha": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+    "contractCommit": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+    "criteriaJsonSha256": "cd6ec25e7b5120a39715fc579e5f7da8749bb798c66f1ceef1a932f58ec6c003",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "noRed": null,
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 30
+        }
+      ],
+      "reasonWindow": 30
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0029/checks/exchange-letters.mjs",
+      "exitCode": 0,
+      "durationMs": 1059,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 4310,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-25T21:38:17.773Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "reviewReceipt": null,
+  "reviewBinding": {
+    "contractCommit": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+    "taskFileSha256": "a187f8864dee0cdbb57e93a6e28fa06c1be8c3c4b109c7b89b4e69c8b5efed6d",
+    "bound": false,
+    "allowedBy": null,
+    "note": null
+  },
+  "headDrift": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "worktree": {
+    "headBefore": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+    "head": "e27b7d738f96fc959ddcc26ef552ea334b188c14",
+    "trackedChanges": 9,
+    "extras": [],
+    "stashes": [
+      "stash@{0} On main: coord"
+    ]
+  },
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "TLX6/xHhsd6iJ5u/+dpZGqsQgoO+Oo18x6Fw1sE5ti/Vzx01tQp63G0NeZs/R10nYWQeZJfrciU4OFClKIbWAw=="
+}
