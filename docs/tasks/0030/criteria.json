@@ -1,0 +1,56 @@
+{
+  "task": "0030",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 30,
+    "reasons": {
+      "C1": "FAIL epic-lifecycle:"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "Вердикт из needs-decision + авто-accepted по нарядам; 0.4.12",
+      "command": "node docs/tasks/0030/checks/epic-lifecycle.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json"
+      ],
+      "timeoutMs": 90000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "OK epic-lifecycle"
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные (не меньше 54)",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass (5[4-9]|[6-9][0-9])"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
