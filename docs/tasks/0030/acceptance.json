@@ -1,0 +1,157 @@
+{
+  "version": 6,
+  "status": "accepted",
+  "task": "0030",
+  "title": "Жизненный цикл эпика: вердикт архитектора из needs-decision, авто-accepted; 0.4.12",
+  "risk": "medium",
+  "taskFileSha256": "45465d46e89b9656fb7ea82a2dd3158e1cfe4329cb040e108bf214ae63bc07e2",
+  "criteriaSha256": "841042edab62a2fdad284731e3a5953466ae03f98bf943d7a006720462dce4d8",
+  "criteriaJsonSha256": "84ef7ec4715ca4623220e7a47b48f01f1c09431b4bf8081574e28b842ad920d8",
+  "contractCommit": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+  "baseCommit": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+  "candidateCommit": "4d2b0457ea79ce6012c3e670a3479f99fd79efe0",
+  "tree": "c233eb21f369b4aa07a5e95bbcd84eadc1facd92",
+  "worktreeDigest": "0f8908d610ab007fced39e67300a150bc8ad72b1e257e105dab7593b1f4f940f",
+  "issuedBy": {
+    "kind": "agent",
+    "session": "session-3cf637bf-7cd0-4f00-8bfc-44e015d5a1b9",
+    "model": "unknown"
+  },
+  "actor": {
+    "kind": "agent",
+    "session": "2abcc12c-5598-46ab-9d7c-8916b86126ec",
+    "model": "glm-5.3-flash",
+    "modelSource": "launch-record",
+    "family": null,
+    "host": "PC3348",
+    "keyId": "agent-judge",
+    "attestedBy": "env",
+    "source": "DSH_SESSION_ID",
+    "sourceKind": "harness",
+    "node": "judge-1"
+  },
+  "independence": {
+    "level": "separate-session",
+    "basis": "harness",
+    "separateSession": true,
+    "reportWithheld": true,
+    "reportRead": "not-declared",
+    "reportReadVerified": false,
+    "reportReadReason": "",
+    "keyCustody": "agent-key",
+    "modelLevel": "unknown"
+  },
+  "acceptor": "judge-1",
+  "acceptorRun": {
+    "fresh": true,
+    "nonce": "e13cab53363a80646b5de2a116ddbaee",
+    "runKind": "accept",
+    "startedAt": "2026-11-26T14:53:37.886Z",
+    "finishedAt": "2026-11-26T14:53:56.329Z",
+    "durationMs": 18460,
+    "host": "PC3348",
+    "node": "v25.4.0",
+    "verifySha256": "b31f2a407fe1fe3e2257f155b84b27df2d03bb137b70c29224732818aeefcc70",
+    "verifyLogSha256": null
+  },
+  "effects": [],
+  "effectsRequired": false,
+  "effectConsistency": {
+    "checked": false,
+    "ok": true,
+    "mode": "fail",
+    "links": []
+  },
+  "bypasses": {
+    "allowMissingRed": false,
+    "allowManual": false,
+    "allowDirty": false,
+    "allowBaseMismatch": false
+  },
+  "red": {
+    "kind": "proven",
+    "noRed": null,
+    "baseSha": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+    "contractCommit": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+    "criteriaJsonSha256": "84ef7ec4715ca4623220e7a47b48f01f1c09431b4bf8081574e28b842ad920d8",
+    "failed": 1,
+    "failedIds": [
+      "C1"
+    ],
+    "redExpectation": {
+      "configured": true,
+      "ok": true,
+      "errors": [],
+      "mustFail": [
+        "C1"
+      ],
+      "mustPass": [
+        "C2"
+      ],
+      "noRed": null,
+      "checkDefects": [],
+      "reasonChecks": [
+        {
+          "id": "C1",
+          "ok": true,
+          "distance": 0,
+          "total": 1,
+          "window": 30
+        }
+      ],
+      "reasonWindow": 30
+    }
+  },
+  "checks": [
+    {
+      "id": "C1",
+      "command": "node docs/tasks/0030/checks/epic-lifecycle.mjs",
+      "exitCode": 0,
+      "durationMs": 1776,
+      "passed": true
+    },
+    {
+      "id": "C2",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "exitCode": 0,
+      "durationMs": 4629,
+      "passed": true
+    }
+  ],
+  "acceptedAt": "2026-11-26T14:53:57.722Z",
+  "humanSignoff": false,
+  "signedBy": null,
+  "securityReview": false,
+  "review": null,
+  "reviewReceipt": null,
+  "reviewBinding": {
+    "contractCommit": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+    "taskFileSha256": "45465d46e89b9656fb7ea82a2dd3158e1cfe4329cb040e108bf214ae63bc07e2",
+    "bound": false,
+    "allowedBy": null,
+    "note": null
+  },
+  "headDrift": null,
+  "decisions": {
+    "count": 0,
+    "digest": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "assumed": [],
+    "confirmed": 0
+  },
+  "attack": null,
+  "releaseReady": true,
+  "notes": "",
+  "worktree": {
+    "headBefore": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+    "head": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+    "trackedChanges": 3,
+    "extras": [],
+    "stashes": [
+      "stash@{0} On main: coord"
+    ]
+  },
+  "signatureAlgorithm": "ed25519",
+  "keyId": "agent-judge",
+  "publicKeyFingerprint": "80667275b382cc97",
+  "signature": "coOc7xYQogqgKcddTYBwqSxhIjuNu5/hg6eMgy4p2CPCx5oO9byrzz4fBnTSA9/ufOKlKrbOtSj1+mkEH+5gBQ=="
+}
