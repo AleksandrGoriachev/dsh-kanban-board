@@ -276,6 +276,54 @@ test('sweep: цикл blocked_by → оба наряда в needs-decision', () 
   } finally { cleanup(dir); }
 });
 
+test('эпик: needs-decision → accepted → done (вердикт архитектора)', () => {
+  const dir = board();
+  try {
+    createEpic(dir, { id: 'E1', title: 'эпик', involved: ['console'], result: 'R' });
+    assert.equal(apply(dir, { card: 'E1', from: 'draft', to: 'agreeing', by: 'architect' }).ok, true);
+    assert.equal(apply(dir, { card: 'E1', from: 'agreeing', to: 'needs-decision', by: 'motor' }).ok, true);
+    const accepted = apply(dir, { card: 'E1', from: 'needs-decision', to: 'accepted', by: 'architect' });
+    assert.equal(accepted.ok, true);
+    assert.equal(accepted.marker, '[transition-applied]');
+    assert.equal(loadCard(dir, 'E1').meta.status, 'accepted');
+    const done = apply(dir, { card: 'E1', from: 'accepted', to: 'done', by: 'architect' });
+    assert.equal(done.ok, true);
+    assert.equal(loadCard(dir, 'E1').meta.status, 'done');
+  } finally { cleanup(dir); }
+});
+
+test('sweep: эпик in-progress → accepted, когда все его наряды accepted', () => {
+  const dir = board();
+  try {
+    createEpic(dir, { id: 'E1', title: 'эпик', result: 'R' });
+    apply(dir, { card: 'E1', from: 'draft', to: 'agreeing', by: 'architect' });
+    apply(dir, { card: 'E1', from: 'agreeing', to: 'agreed', by: 'motor' });
+    apply(dir, { card: 'E1', from: 'agreed', to: 'decomposed', by: 'architect' });
+    apply(dir, { card: 'E1', from: 'decomposed', to: 'in-progress', by: 'motor' });
+    for (const id of ['E1-1', 'E1-2']) {
+      createTask(dir, { id, title: id, epic: 'E1', workspace: 'tv2', spec: 'S ' + id });
+      apply(dir, { card: id, from: 'proposed', to: 'agreed', by: 'motor' });
+      apply(dir, { card: id, from: 'agreed', to: 'in-progress', by: 'motor', payload: { lease_until: future() } });
+      apply(dir, { card: id, from: 'in-progress', to: 'integration', by: 'motor', payload: { evidence: ['e-' + id] } });
+    }
+    assert.equal(apply(dir, { card: 'E1-1', from: 'integration', to: 'accepted', by: 'architect' }).ok, true);
+    const partial = sweep(dir, { now: new Date() });
+    assert.equal(partial.expired.length, 0);
+    assert.equal(loadCard(dir, 'E1').meta.status, 'in-progress', 'один наряд не принят — эпик не двигается');
+
+    assert.equal(apply(dir, { card: 'E1-2', from: 'integration', to: 'accepted', by: 'architect' }).ok, true);
+    const full = sweep(dir, { now: new Date() });
+    assert.equal(full.expired.length, 1);
+    assert.equal(full.expired[0].marker, '[epic-accepted]');
+    assert.equal(loadCard(dir, 'E1').meta.status, 'accepted');
+    const event = readJournal(dir).filter((item) => item.kind === 'transition' && item.card === 'E1').pop();
+    assert.equal(event.from, 'in-progress');
+    assert.equal(event.to, 'accepted');
+    assert.equal(event.by, 'motor');
+    assert.equal(event.proof, 'все наряды приняты');
+  } finally { cleanup(dir); }
+});
+
 test('sweep: линейный blocked_by без цикла не меняет статусы', () => {
   const dir = board();
   try {

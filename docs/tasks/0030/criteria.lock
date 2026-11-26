@@ -1,0 +1,64 @@
+{
+  "version": 3,
+  "task": "0030",
+  "taskFileSha256": "45465d46e89b9656fb7ea82a2dd3158e1cfe4329cb040e108bf214ae63bc07e2",
+  "criteriaSha256": "841042edab62a2fdad284731e3a5953466ae03f98bf943d7a006720462dce4d8",
+  "criteriaJsonSha256": "84ef7ec4715ca4623220e7a47b48f01f1c09431b4bf8081574e28b842ad920d8",
+  "attackSha256": null,
+  "contractCommit": "0b3eb676f188d0c0c8c49da7f6f534d6509363ec",
+  "protected": [],
+  "contract": {
+    "allowedPaths": [
+      "lib/**",
+      "test/**",
+      "package.json",
+      "docs/tasks/0030/task.md",
+      "docs/tasks/0030/criteria.json"
+    ],
+    "protectedPaths": [
+      "docs/tasks/0030/checks/**"
+    ],
+    "redAllowDirty": [
+      "docs/tasks/0030/**"
+    ],
+    "criteria": [
+      {
+        "id": "C1",
+        "command": "node docs/tasks/0030/checks/epic-lifecycle.mjs",
+        "cwd": ".",
+        "timeoutMs": 90000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "OK epic-lifecycle"
+        },
+        "covers": [
+          "lib/**",
+          "package.json"
+        ],
+        "tags": [
+          "fast"
+        ]
+      },
+      {
+        "id": "C2",
+        "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "expect": {
+          "exitCode": 0,
+          "stdoutRegex": "pass (5[4-9]|[6-9][0-9])"
+        },
+        "covers": [
+          "lib/**",
+          "test/**"
+        ],
+        "tags": [
+          "fast",
+          "negative"
+        ]
+      }
+    ]
+  },
+  "createdAt": "2026-11-26T14:42:18.537Z",
+  "tool": "subagent-workflow/2.6.112"
+}
