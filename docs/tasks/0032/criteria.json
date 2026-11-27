@@ -1,0 +1,56 @@
+{
+  "task": "0032",
+  "setup": [],
+  "teardown": [],
+  "redExpect": {
+    "mustFail": [
+      "C1"
+    ],
+    "mustPass": [
+      "C2"
+    ],
+    "reasonWindow": 30,
+    "reasons": {
+      "C1": "FAIL status-loaded-version:"
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "title": "/api/status отдаёт версию загруженного модуля; 0.4.14",
+      "command": "node docs/tasks/0032/checks/status-loaded-version.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "package.json"
+      ],
+      "timeoutMs": 90000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "OK status-loaded-version"
+      },
+      "tags": [
+        "fast"
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Тесты зелёные (не меньше 56)",
+      "command": "node --test test/board.test.mjs test/motor.test.mjs test/api.test.mjs",
+      "cwd": ".",
+      "covers": [
+        "lib/**",
+        "test/**"
+      ],
+      "timeoutMs": 120000,
+      "expect": {
+        "exitCode": 0,
+        "stdoutRegex": "pass (5[6-9]|[6-9][0-9])"
+      },
+      "tags": [
+        "fast",
+        "negative"
+      ]
+    }
+  ]
+}
